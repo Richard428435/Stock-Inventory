@@ -1,0 +1,13 @@
+{
+  "name": "sacred-steward",
+  "version": "1.0.0",
+  "description": "Chariot of Fire Faith Assembly – Sacred Steward System",
+  "scripts": {
+    "install:all": "cd server && npm install && cd ../client && npm install",
+    "seed": "cd server && npm run seed",
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm start",
+    "start:server": "cd server && npm start"
+  },
+  "private": true
+}
