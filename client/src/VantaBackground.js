@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { fixGoogleDriveUrl } from './utils/googleDrive';
 import { useTheme } from './context/ThemeContext';
 import { useSystem } from './context/SystemContext';
 
@@ -7,7 +7,9 @@ export default function VantaBackground() {
   const { theme } = useTheme();
   const { config } = useSystem();
 
-  const hasImage = !!config?.backgroundUrl;
+  const rawUrl = config?.backgroundUrl;
+  const backgroundUrl = fixGoogleDriveUrl(rawUrl);
+  const hasImage = !!backgroundUrl;
 
   useEffect(() => {
     // Only init Vanta if NO background image is set
@@ -46,7 +48,7 @@ export default function VantaBackground() {
         ref={ref} 
         className="fixed inset-0 z-[-1] w-full h-full transition-opacity duration-1000"
         style={hasImage ? {
-          backgroundImage: `url(${config.backgroundUrl})`,
+          backgroundImage: `url(${backgroundUrl})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',

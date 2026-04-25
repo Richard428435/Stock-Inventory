@@ -111,21 +111,27 @@ export default function SettingsModal({ onClose, initialTab = 'profile' }) {
   const handleFileUpload = async (file, field) => {
     if (!file) return;
     
-    // Check file size (Vercel has a 4.5MB limit for requests, but we'll stick to 2MB for saftey in DB)
-    if (file.size > 2 * 1024 * 1024) {
-      return toast.error('File too large. Please use an image under 2MB.');
+    // Check file size (Vercel has a 4.5MB limit for requests)
+    if (file.size > 4 * 1024 * 1024) {
+      return toast.error('File too large. Please use an image under 4MB for cloud upload.');
     }
 
     const reader = new FileReader();
-    const toastId = toast.loading(`Processing ${file.name}...`);
+    const toastId = toast.loading(`Uploading ${file.name} to Cloud...`);
     
     reader.onloadend = async () => {
       try {
-        // Direct Base64 storage in state (will be saved to DB on handleSaveDesigner)
-        setDesignerForm(p => ({ ...p, [field]: reader.result }));
-        toast.success(`${file.name} prepared for saving!`, { id: toastId });
+        // Call backend upload (which now supports Google Drive if configured)
+        const res = await api.post('/system/upload', {
+          base64: reader.result,
+          filename: file.name
+        });
+        
+        // res.data.url will be a Google Drive link or the original Base64
+        setDesignerForm(p => ({ ...p, [field]: res.data.url }));
+        toast.success(`${file.name} uploaded successfully!`, { id: toastId });
       } catch (err) {
-        toast.error(`Processing failed: ${err.message}`, { id: toastId });
+        toast.error(`Upload failed: ${err.response?.data?.message || err.message}`, { id: toastId });
       }
     };
     reader.readAsDataURL(file);

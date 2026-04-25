@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Upload media to disk (bypasses MongoDB limit)
+// Upload media (Google Drive primary, Base64 fallback)
 router.post('/upload', auth, adminOnly, async (req, res) => {
   try {
     const { base64, filename } = req.body;
@@ -25,27 +25,19 @@ router.post('/upload', auth, adminOnly, async (req, res) => {
       return res.status(400).json({ message: 'Missing file data' });
     }
 
-    // Extract base64 data
-    const matches = base64.match(/^data:(.+);base64,(.+)$/);
-    if (!matches) {
-      return res.status(400).json({ message: 'Invalid base64 format' });
+    // Attempt Google Drive Upload if configured
+    if (process.env.GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON && process.env.GOOGLE_DRIVE_FOLDER_ID) {
+      try {
+        const { uploadToDrive } = require('../utils/googleDrive');
+        const driveUrl = await uploadToDrive(base64, filename);
+        return res.json({ url: driveUrl });
+      } catch (driveErr) {
+        console.error('Drive Upload failed, falling back to Base64:', driveErr);
+      }
     }
 
-    const type = matches[1];
-    const buffer = Buffer.from(matches[2], 'base64');
-    const ext = path.extname(filename) || (type.includes('video') ? '.mp4' : '.jpg');
-    const uniqueName = `upload_${Date.now()}${ext}`;
-    
-    // Ensure directory exists
-    const uploadDir = path.join(__dirname, '../public/uploads');
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-
-    const filePath = path.join(uploadDir, uniqueName);
-    fs.writeFileSync(filePath, buffer);
-    
-    res.json({ url: `/uploads/${uniqueName}` });
+    // Default Fallback: Return raw base64 (saved to DB by frontend)
+    res.json({ url: base64 });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
