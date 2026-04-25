@@ -7,8 +7,8 @@ const baseNavItems = [
   { path: '/inventory', label: 'Home', icon: '🏠' },
   { path: '/inventory/items', label: 'Items', icon: '📦' },
   { path: '/inventory/stock-logs', label: 'Logs', icon: '📜' },
-  { path: '/inventory/maintenance', label: 'Service', icon: '🔧' },
-  { path: '/inventory/barcodes', label: 'Labels', icon: '🏷️' },
+  { path: '/inventory/maintenance', label: 'Maintenance', icon: '🔧' },
+  { path: '/inventory/barcodes', label: 'Barcodes', icon: '🏷️' },
   { path: '/inventory/scanner', label: 'Scanner', icon: '📷' }
 ];
 
