@@ -90,7 +90,7 @@ export default function LoginPage() {
       }
       
       toast.success('Welcome back!');
-      navigate('/inventory', { replace: true });
+      window.location.href = '/inventory';
     } catch (err) {
       console.error('Full Login Error:', err);
       const msg = err.response?.data?.message || 'Login failed. Please check your database connection.';
