@@ -48,6 +48,11 @@ function AppContent() {
   const location = useLocation();
   const showVanta = true;
 
+  // Final gate: If root, go to login
+  if (location.pathname === '/') {
+    return <Navigate to="/login" replace />;
+  }
+
   return (
     <>
       <VantaBackground />

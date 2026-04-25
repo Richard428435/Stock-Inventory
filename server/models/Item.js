@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const itemSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  sku: { type: String, unique: true },
+  sku: { type: String, unique: true, sparse: true },
   barcode: { type: String, unique: true, sparse: true },
   category: { type: String, required: true },
   location: { type: String },

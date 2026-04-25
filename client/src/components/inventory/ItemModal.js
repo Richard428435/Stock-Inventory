@@ -3,7 +3,24 @@ import api from '../../utils/api';
 import toast from 'react-hot-toast';
 
 export default function ItemModal({ item, onClose, onSave, categories }) {
-  const [form, setForm] = useState(item || { name: '', model: '', sku: '', category: categories[0]?.name || '', location: '', quantity: 0, lowStockThreshold: 5, warrantyAvailable: false, warrantyExpiry: '', warrantyCardImage: '', invoiceDocument: '', description: '', imageUrl: '', purchasedFrom: '', shopAddress: '', shopContact: '' });
+  const [form, setForm] = useState(item || { 
+    name: '', 
+    model: '', 
+    sku: '', 
+    category: item?.category || categories[0]?.name || '', 
+    location: '', 
+    quantity: 0, 
+    lowStockThreshold: 5, 
+    warrantyAvailable: false, 
+    warrantyExpiry: '', 
+    warrantyCardImage: '', 
+    invoiceDocument: '', 
+    description: '', 
+    imageUrl: '', 
+    purchasedFrom: '', 
+    shopAddress: '', 
+    shopContact: '' 
+  });
   const [saving, setSaving] = useState(false);
 
   const handleSubmit = async (e) => {
