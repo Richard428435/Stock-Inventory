@@ -52,9 +52,9 @@ function AppContent() {
     <>
       <VantaBackground />
       <Routes>
+        <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/" element={<ProtectedRoute><Navigate to="/inventory" /></ProtectedRoute>} />
-
+        
         {/* Inventory Module */}
         <Route path="/inventory" element={<ProtectedRoute><InventoryLayout /></ProtectedRoute>}>
           <Route index element={<HomePage />} />
