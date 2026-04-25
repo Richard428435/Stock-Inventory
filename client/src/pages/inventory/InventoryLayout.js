@@ -141,23 +141,23 @@ export default function InventoryLayout() {
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto p-4 md:p-8 inventory-scrollbar">
-        <div className="max-w-7xl mx-auto fade-in">
+      <main className="flex-1 overflow-x-hidden overflow-y-auto pt-24 pb-32">
+        <div className="max-w-7xl mx-auto px-4 md:px-6">
           <Outlet />
         </div>
       </main>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden sticky bottom-0 z-50 glass-liquid border-t border-slate-200 dark:border-white/10 px-4 py-3 flex justify-around items-center">
+      <nav className="md:hidden fixed bottom-1 left-1 right-1 z-50 glass-liquid border border-slate-200 dark:border-white/10 px-4 py-4 rounded-2xl flex justify-around items-center shadow-2xl">
         {navItems.map((item) => (
           <Link
             key={item.path}
             to={item.path}
-            className={`flex flex-col items-center gap-1 transition-colors ${isActive(item.path) ? 'text-blue-400' : 'text-slate-500 dark:text-gray-400'
+            className={`flex flex-col items-center gap-1.5 transition-all active:scale-90 ${isActive(item.path) ? 'text-blue-400' : 'text-slate-500 dark:text-gray-400'
               }`}
           >
-            {item.icon && <span className="text-xl">{item.icon}</span>}
-            <span className="text-[10px] font-bold uppercase tracking-widest">{item.label}</span>
+            {item.icon && <span className="text-xl md:text-2xl">{item.icon}</span>}
+            <span className="text-[9px] font-black uppercase tracking-widest">{item.label}</span>
           </Link>
         ))}
       </nav>

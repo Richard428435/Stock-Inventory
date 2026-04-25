@@ -72,7 +72,7 @@ export default function HomePage() {
                 placeholder="Search items..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="flex-1 max-w-md px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm"
+                className="flex-1 max-w-md px-4 py-3 glass-liquid !bg-white/10 border-white/10 !text-slate-800 dark:!text-white rounded-xl focus:!border-white/50 transition-all outline-none"
               />
               <button
                 type="submit"
@@ -131,28 +131,37 @@ export default function HomePage() {
       <div className="max-w-7xl mx-auto px-6 py-12 space-y-12">
         {/* Stats Cards */}
 
+      {/* Stats Cards */}
         <section>
-          <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-8">At a Glance</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="p-8 glass-liquid rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all">
-              <div className="text-4xl mb-4 text-slate-600">📦</div>
-              <div className="text-3xl font-bold text-slate-800 dark:text-white mb-1">{quickStats.totalItems}</div>
-              <div className="text-slate-600 dark:text-gray-300 text-sm uppercase tracking-wide font-medium">Total Items</div>
+          <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-6">At a Glance</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            <div className="p-5 md:p-8 glass-liquid rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex md:block items-center gap-4 md:gap-0">
+              <div className="text-3xl md:text-4xl md:mb-4 text-slate-600">📦</div>
+              <div>
+                <div className="text-2xl md:text-3xl font-bold text-slate-800 dark:text-white mb-0.5">{quickStats.totalItems}</div>
+                <div className="text-[10px] md:text-sm text-slate-600 dark:text-gray-300 uppercase tracking-widest font-bold">Total Items</div>
+              </div>
             </div>
-            <div className="p-8 glass-liquid rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all">
-              <div className="text-4xl mb-4 text-amber-500">⚠️</div>
-              <div className="text-3xl font-bold text-slate-800 dark:text-white mb-1">{quickStats.lowStock}</div>
-              <div className="text-slate-600 dark:text-gray-300 text-sm uppercase tracking-wide font-medium">Low Stock</div>
+            <div className="p-5 md:p-8 glass-liquid rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex md:block items-center gap-4 md:gap-0">
+              <div className="text-3xl md:text-4xl md:mb-4 text-amber-500">⚠️</div>
+              <div>
+                <div className="text-2xl md:text-3xl font-bold text-slate-800 dark:text-white mb-0.5">{quickStats.lowStock}</div>
+                <div className="text-[10px] md:text-sm text-slate-600 dark:text-gray-300 uppercase tracking-widest font-bold">Low Stock</div>
+              </div>
             </div>
-            <div className="p-8 glass-liquid rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all">
-              <div className="text-4xl mb-4 text-blue-600">🔧</div>
-              <div className="text-3xl font-bold text-slate-800 dark:text-white mb-1">{quickStats.openMaintenance}</div>
-              <div className="text-slate-800 dark:text-white text-sm uppercase tracking-wide font-medium">Maintenance</div>
+            <div className="p-5 md:p-8 glass-liquid rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex md:block items-center gap-4 md:gap-0">
+              <div className="text-3xl md:text-4xl md:mb-4 text-blue-600">🔧</div>
+              <div>
+                <div className="text-2xl md:text-3xl font-bold text-slate-800 dark:text-white mb-0.5">{quickStats.openMaintenance}</div>
+                <div className="text-[10px] md:text-sm text-slate-600 dark:text-gray-300 uppercase tracking-widest font-bold">Maintenance</div>
+              </div>
             </div>
-            <div className="p-8 glass-liquid rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all">
-              <div className="text-4xl mb-4 text-emerald-600">📊</div>
-              <div className="text-3xl font-bold text-slate-800 dark:text-white mb-1">{quickStats.thisMonthUsage}</div>
-              <div className="text-slate-600 dark:text-gray-300 text-sm uppercase tracking-wide font-medium">This Month</div>
+            <div className="p-5 md:p-8 glass-liquid rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex md:block items-center gap-4 md:gap-0">
+              <div className="text-3xl md:text-4xl md:mb-4 text-emerald-600">📊</div>
+              <div>
+                <div className="text-2xl md:text-3xl font-bold text-slate-800 dark:text-white mb-0.5">{quickStats.thisMonthUsage}</div>
+                <div className="text-[10px] md:text-sm text-slate-600 dark:text-gray-300 uppercase tracking-widest font-bold">This Month</div>
+              </div>
             </div>
           </div>
         </section>
