@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import api from '../utils/api';
+import { fixGoogleDriveUrl } from '../utils/googleDrive';
 
 const SystemContext = createContext();
 
@@ -37,7 +38,8 @@ export const SystemProvider = ({ children }) => {
   const applyTheme = (conf) => {
     const root = document.documentElement;
     if (conf.backgroundUrl) {
-      root.style.setProperty('--bg-image', `url(${conf.backgroundUrl})`);
+      const fixedUrl = fixGoogleDriveUrl(conf.backgroundUrl);
+      root.style.setProperty('--bg-image', `url(${fixedUrl})`);
     } else {
       root.style.removeProperty('--bg-image');
     }
