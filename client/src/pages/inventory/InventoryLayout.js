@@ -4,12 +4,12 @@ import { useAuth } from '../../context/AuthContext';
 import SettingsModal from '../../components/SettingsModal';
 
 const baseNavItems = [
-  { path: '/inventory', label: 'Home' },
-  { path: '/inventory/items', label: 'Items' },
-  { path: '/inventory/stock-logs', label: 'Logs' },
-  { path: '/inventory/maintenance', label: 'Maintenance' },
-  { path: '/inventory/barcodes', label: 'Barcodes' },
-  { path: '/inventory/scanner', label: 'Scanner' }
+  { path: '/inventory', label: 'Home', icon: '🏠' },
+  { path: '/inventory/items', label: 'Items', icon: '📦' },
+  { path: '/inventory/stock-logs', label: 'Logs', icon: '📜' },
+  { path: '/inventory/maintenance', label: 'Service', icon: '🔧' },
+  { path: '/inventory/barcodes', label: 'Labels', icon: '🏷️' },
+  { path: '/inventory/scanner', label: 'Scanner', icon: '📷' }
 ];
 
 export default function InventoryLayout() {
@@ -22,7 +22,7 @@ export default function InventoryLayout() {
 
   const navItems = [
     ...baseNavItems,
-    ...(isAdmin ? [{ path: '/inventory/users', label: 'User Management' }] : [])
+    ...(isAdmin ? [{ path: '/inventory/users', label: 'Users', icon: '👥' }] : [])
   ];
 
   const isActive = (path) => location.pathname === path || location.pathname.startsWith(`${path}/`);

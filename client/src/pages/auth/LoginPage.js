@@ -131,7 +131,7 @@ export default function LoginPage() {
 
         {/* Right-aligned Single Container */}
         <div className="w-full flex justify-center lg:justify-end md:pr-10 lg:pr-24 xl:pr-36 items-center h-screen px-2">
-          <div className="glass-liquid bg-white/60 dark:bg-white/5 backdrop-blur-3xl border border-slate-300 dark:border-white/20 rounded-3xl shadow-2xl w-[400px] md:w-[440px] lg:w-[480px] p-8 md:p-10 text-center min-h-[520px] max-h-[90vh] flex flex-col justify-center">
+          <div className="glass-liquid bg-white/60 dark:bg-white/5 backdrop-blur-3xl border border-slate-300 dark:border-white/20 rounded-3xl shadow-2xl w-full max-w-[400px] md:max-w-none md:w-[440px] lg:w-[480px] p-8 md:p-10 text-center min-h-[520px] max-h-[90vh] flex flex-col justify-center">
             
             {view === 'login' && (
               <div className="fade-in space-y-6">

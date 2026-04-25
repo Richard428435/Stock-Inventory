@@ -10,6 +10,26 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.waves.min.js"></script>
+    <script>
+      // Browser Auto-Adjust Engine
+      function autoAdjust() {
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+        
+        // Auto-scale for different browser zoom levels or orientations
+        const width = window.innerWidth;
+        if (width < 450) {
+          document.documentElement.style.fontSize = '14px';
+        } else if (width < 1024) {
+          document.documentElement.style.fontSize = '15px';
+        } else {
+          document.documentElement.style.fontSize = '16px';
+        }
+      }
+      window.addEventListener('resize', autoAdjust);
+      window.addEventListener('orientationchange', autoAdjust);
+      autoAdjust();
+    </script>
   </head>
 
   <body style="margin: 0; padding: 0; overflow: hidden;">

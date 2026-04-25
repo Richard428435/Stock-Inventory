@@ -7,7 +7,7 @@
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(calc(var(--vh, 1vh) * 2));
   }
 
   to {
@@ -400,5 +400,54 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+  }
+
+  /* Mobile Polish & Precision Scaling */
+  @media (max-width: 768px) {
+    .glass-liquid {
+      @apply p-4 !important;
+      border-radius: 1.25rem !important;
+    }
+
+    h1 { @apply text-2xl !important; }
+    h2 { @apply text-xl !important; }
+    h3 { @apply text-lg !important; }
+
+    .max-w-7xl {
+      @apply px-4 !important;
+    }
+
+    .p-8 {
+      @apply p-5 !important;
+    }
+
+    .py-12 {
+      @apply py-8 !important;
+    }
+
+    .gap-6 {
+      @apply gap-4 !important;
+    }
+
+    /* Prevent text wrapping issues on mobile stats */
+    .text-3xl {
+      @apply text-2xl !important;
+    }
+
+    /* Force the Vanta background to be more subtle on mobile */
+    #vanta-bg {
+      opacity: 0.6 !important;
+    }
+  }
+
+  /* Optimize for extremely small screens (SE, Fold) */
+  @media (max-width: 380px) {
+    .glass-liquid {
+      @apply p-3 !important;
+    }
+    
+    .text-[10px] {
+      font-size: 8px !important;
+    }
   }
 }
