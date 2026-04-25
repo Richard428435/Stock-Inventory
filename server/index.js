@@ -8,7 +8,18 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(cors({ origin: ['http://localhost:3000', 'http://localhost:3001'], credentials: true }));
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001'];
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl) or allowed origins or any vercel.app
+    if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
 app.use(express.json({ limit: '600mb' }));
 app.use(express.urlencoded({ limit: '600mb', extended: true }));
 app.use(express.static('public'));
