@@ -46,11 +46,11 @@ function AdminRoute({ children }) {
 
 function AppContent() {
   const location = useLocation();
-  const showVanta = location.pathname !== '/login';
+  const showVanta = true;
 
   return (
     <>
-      {showVanta && <VantaBackground />}
+      <VantaBackground />
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/" element={<ProtectedRoute><Navigate to="/inventory" /></ProtectedRoute>} />

@@ -43,12 +43,6 @@ export default function LoginPage() {
     '"Then those who feared the Lord spoke with one another. The Lord paid attention and heard them..." Malachi 3:16'
   ];
 
-  // Hide global background on login page
-  useEffect(() => {
-    document.body.classList.add('no-global-bg');
-    return () => document.body.classList.remove('no-global-bg');
-  }, []);
-
   // Auto rotate verses
   useEffect(() => {
     const timer = setInterval(() => {
@@ -96,9 +90,10 @@ export default function LoginPage() {
       }
       
       toast.success('Welcome back!');
-      navigate('/');
     } catch (err) {
-      toast.error('Login failed');
+      console.error('Full Login Error:', err);
+      const msg = err.response?.data?.message || 'Login failed. Please check your database connection.';
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
@@ -121,31 +116,6 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-
-      {/* Background Media (Dynamic from App Designer) */}
-      {config?.loginBackgroundType === 'video' ? (
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          key={config?.loginBackgroundUrl || 'default'}
-          className="absolute inset-0 w-full h-full object-cover opacity-80"
-        >
-          <source src={config?.loginBackgroundUrl || "/videos/Good_friday_art_texture_3_4k.mp4"} type="video/mp4" />
-        </video>
-      ) : (
-        config?.loginBackgroundUrl && (
-          <div 
-            className="absolute inset-0 w-full h-full bg-cover bg-center opacity-80"
-            style={{ backgroundImage: `url(${config.loginBackgroundUrl})` }}
-          />
-        )
-      )}
-
-      {/* Dark overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/10 to-black/20" />
-
       <div className="relative z-10 min-h-screen flex items-center justify-center px-6">
 
         {/* Bible verses - left bottom - rotating */}

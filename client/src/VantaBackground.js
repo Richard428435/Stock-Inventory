@@ -7,8 +7,11 @@ export default function VantaBackground() {
   const { theme } = useTheme();
   const { config } = useSystem();
 
+  const hasImage = !!config?.backgroundUrl;
+
   useEffect(() => {
-    if (config?.backgroundUrl) return;
+    // Only init Vanta if NO background image is set
+    if (hasImage) return;
     
     let vantaEffect;
 
@@ -22,7 +25,10 @@ export default function VantaBackground() {
         minWidth: 200.00,
         scale: 1.00,
         scaleMobile: 1.00,
-        color: theme === 'dark' ? 0x0 : 0xe2e8f0
+        color: theme === 'dark' ? 0x0 : 0xe2e8f0,
+        shininess: 30,
+        waveHeight: 15,
+        waveSpeed: 0.5
       });
     }
 
@@ -31,10 +37,25 @@ export default function VantaBackground() {
         vantaEffect.destroy();
       }
     };
-  }, [theme, config?.backgroundUrl]);
+  }, [theme, hasImage]);
 
-  if (config?.backgroundUrl) return null;
-
-  return <div ref={ref} className="fixed inset-0 z-[-1] w-full h-full" />;
+  return (
+    <>
+      {/* Fallback Vanta Layer or Custom Image Layer */}
+      <div 
+        ref={ref} 
+        className="fixed inset-0 z-[-1] w-full h-full transition-opacity duration-1000"
+        style={hasImage ? {
+          backgroundImage: `url(${config.backgroundUrl})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          opacity: 1
+        } : {}}
+      />
+      {/* Dark overlay for readability */}
+      <div className="fixed inset-0 z-[-1] bg-black/10 dark:bg-black/40 pointer-events-none" />
+    </>
+  );
 }
 

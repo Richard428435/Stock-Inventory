@@ -135,7 +135,7 @@ function ItemListRow({ item, onEdit, onDelete, onAdjust, onPrint, onView, hasPer
         {/* Visual Header / Image (Landscape Optimized) */}
         <div className="w-32 h-20 rounded-xl overflow-hidden bg-[#0c0818]/60 shadow-lg flex-shrink-0 border border-slate-200 dark:border-white/10 group-hover:scale-105 transition-transform duration-500">
           {item.imageUrl ? (
-            <img src={item.imageUrl} alt={item.name} className="w-full h-full object-contain p-1 transition-transform duration-700" />
+            <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover transition-transform duration-700" />
           ) : (
             <div className="w-full h-full flex flex-col items-center justify-center text-white/10 bg-gradient-to-br from-white/5 to-transparent">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">

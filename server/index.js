@@ -33,7 +33,14 @@ app.use('/api/inventory/categories', require('./routes/inventory/categories'));
 app.use('/api/inventory/stock-logs', require('./routes/inventory/stockLogs'));
 app.use('/api/inventory/maintenance', require('./routes/inventory/maintenance'));
 // Health check
-app.get('/api/health', (req, res) => res.json({ status: 'ok', message: 'Sacred Steward API running' }));
+app.get('/api/health', (req, res) => {
+  const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
+  res.json({ 
+    status: 'ok', 
+    database: dbStatus,
+    message: 'Sacred Steward API running' 
+  });
+});
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
