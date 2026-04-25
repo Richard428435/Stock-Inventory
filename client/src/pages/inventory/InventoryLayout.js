@@ -3,6 +3,7 @@ import { Outlet, useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import SettingsModal from '../../components/SettingsModal';
 
+// Deployment Hash: 2026-04-25T08:52:10Z - Triggering Nav Label Sync
 const baseNavItems = [
   { path: '/inventory', label: 'Home', icon: '🏠' },
   { path: '/inventory/items', label: 'Items', icon: '📦' },
