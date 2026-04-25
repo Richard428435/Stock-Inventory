@@ -9,8 +9,9 @@ const app = express();
 
 // Middleware
 app.use(cors({ origin: ['http://localhost:3000', 'http://localhost:3001'], credentials: true }));
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ limit: '10mb', extended: true }));
+app.use(express.json({ limit: '600mb' }));
+app.use(express.urlencoded({ limit: '600mb', extended: true }));
+app.use(express.static('public'));
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
@@ -25,8 +26,35 @@ app.get('/api/health', (req, res) => res.json({ status: 'ok', message: 'Sacred S
 
 // Connect to MongoDB and start server
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => {
+  .then(async () => {
     console.log('✅ MongoDB connected');
+    
+    // Auto-seed Overall Administrator
+    try {
+      const User = require('./models/User');
+      const adminEmail = 'cffachurchcoimbatore@gmail.com'.toLowerCase();
+      const existing = await User.findOne({ email: adminEmail });
+      if (!existing) {
+        await User.create({ 
+          name: 'CFFA Admin', 
+          email: adminEmail, 
+          password: 'Jai171065', 
+          role: 'admin',
+          active: true 
+        });
+        console.log('✅ CFFA Admin account created');
+      } else {
+        existing.name = 'CFFA Admin';
+        existing.password = 'Jai171065';
+        existing.role = 'admin';
+        existing.active = true;
+        await existing.save();
+        console.log('ℹ️  CFFA Admin credentials synchronized');
+      }
+    } catch (seedErr) {
+      console.error('Auto-seed failed:', seedErr.message);
+    }
+
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
   })

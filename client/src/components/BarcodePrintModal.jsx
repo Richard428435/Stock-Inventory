@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import JsBarcode from 'jsbarcode';
 import { BrowserQRCodeSvgWriter } from '@zxing/browser';
 
@@ -21,9 +22,8 @@ function BarcodePrintModal({ items, onClose }) {
               format: 'CODE128',
               width: 2,
               height: 60,
-              displayValue: true,
-              fontSize: 14,
-              margin: 10,
+              displayValue: false,
+              margin: 0,
               background: 'white',
               lineColor: 'black'
             });
@@ -43,14 +43,14 @@ function BarcodePrintModal({ items, onClose }) {
     onClose();
   };
 
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4 print:hidden">
-      <div className="bg-white rounded-2xl p-6 max-w-4xl max-h-[90vh] overflow-y-auto w-full">
+  return createPortal(
+    <div className="print-modal-overlay fixed inset-0 bg-black/75 flex items-center justify-center z-50 p-4 print:static print:bg-transparent print:p-0">
+      <div className="print-modal-content bg-white rounded-2xl p-6 max-w-4xl max-h-[90vh] overflow-y-auto w-full print:bg-transparent print:shadow-none print:max-w-none print:max-h-none print:p-0 print:m-0">
         <div className="flex items-center justify-between mb-6 print:hidden">
           <h3 className="text-xl font-bold text-gray-900">Print {items.length} Barcodes</h3>
           <div className="flex gap-2">
-            <button onClick={handlePrint} className="bg-blue-600 hover:bg-blue-700 text-slate-800 dark:text-white px-6 py-2 rounded-lg font-semibold">
-              🖨️ Print
+            <button onClick={handlePrint} className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold">
+              Print
             </button>
             <button onClick={handleClose} className="bg-gray-300 hover:bg-gray-400 text-gray-900 px-6 py-2 rounded-lg font-semibold">
               Cancel
@@ -58,17 +58,17 @@ function BarcodePrintModal({ items, onClose }) {
           </div>
         </div>
         
-        <div className="barcode-print-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 print:grid-cols-1 print:gap-12">
+        <div className="barcode-print-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {items.map((item, index) => (
-            <div key={item._id || index} className="barcode-print-item flex flex-col items-center p-6 border rounded-lg print:border-none print:p-12 print:shadow-lg print:bg-white">
+            <div key={item._id || index} className="barcode-print-item flex flex-col items-center p-6 border rounded-lg print:border-none print:p-0 print:m-0 mb-8 print:mb-4">
               <div className="mb-4 text-center print:hidden">
                 <h4 className="font-semibold text-gray-900">{item.name}</h4>
                 <p className="text-sm text-gray-600">{item.sku}</p>
               </div>
                {hwFormat === 'qr' ? (
-                 <div ref={el => printRefs.current[index] = el} className="qr-container my-4 flex justify-center bg-white p-2 rounded-xl" />
+                 <div ref={el => printRefs.current[index] = el} className="qr-container my-4 flex justify-center bg-white p-2 rounded-xl print:p-0 print:m-0 print:my-0" />
                ) : (
-                 <svg ref={el => printRefs.current[index] = el} className="barcode-svg max-w-full h-auto" />
+                 <svg ref={el => printRefs.current[index] = el} className="barcode-svg max-w-full h-auto print:m-0 print:p-0" />
                )}
               <div className="mt-4 text-center print:hidden">
                 <p className="font-mono text-sm text-gray-700">{item.barcode || item.sku}</p>
@@ -77,7 +77,8 @@ function BarcodePrintModal({ items, onClose }) {
           ))}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 

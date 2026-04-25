@@ -33,7 +33,7 @@ export default function StockLogsPage() {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-1">
-          <h2 className="text-4xl font-black text-slate-800 dark:text-white tracking-tight">Stock Activity <span className="text-gradient">Journal</span></h2>
+          <h2 className="text-4xl font-black text-slate-800 dark:text-white tracking-tight">Stock Logs</h2>
           <p className="text-[11px] font-bold text-slate-500 dark:text-white/30 uppercase tracking-[0.3em]">Tracking {total} physical movements</p>
         </div>
         

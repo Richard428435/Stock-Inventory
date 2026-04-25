@@ -21,7 +21,9 @@ const systemConfigSchema = new mongoose.Schema({
       '"Then my God put into my heart to assemble the nobles... and I found the book of the genealogy." Nehemiah 7:5',
       '"Then those who feared the Lord spoke with one another. The Lord paid attention and heard them..." Malachi 3:16'
     ]
-  }
+  },
+  loginBackgroundUrl: { type: String, default: '' },
+  loginBackgroundType: { type: String, default: 'video', enum: ['image', 'video'] }
 }, { timestamps: true });
 
 module.exports = mongoose.model('SystemConfig', systemConfigSchema);

@@ -128,7 +128,7 @@ export default function MaintenancePage() {
       <section className="space-y-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-1">
-            <h2 className="text-4xl font-black text-slate-800 dark:text-white tracking-tight italic">Maintenance <span className="not-italic text-gradient">Registry</span></h2>
+            <h2 className="text-4xl font-black text-slate-800 dark:text-white tracking-tight">Maintenance</h2>
             <p className="text-slate-500 dark:text-gray-400 text-sm font-medium tracking-wide">Orchestrating asset longevity and operational integrity.</p>
           </div>
           <button onClick={() => setShowAdd(true)} className="flex items-center gap-2 px-8 py-4 rounded-2xl glass-liquid text-slate-800 dark:text-white font-black uppercase tracking-[0.2em] hover:bg-white hover:text-slate-900 active:scale-95 transition-all text-xs group shadow-2xl">

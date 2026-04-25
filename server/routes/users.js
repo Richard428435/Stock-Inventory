@@ -83,6 +83,12 @@ router.put('/:id', auth, async (req, res) => {
     const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ message: 'User not found' });
     
+    // Sacred Protection: Overall Administrator cannot be modified by others
+    const PROTECTED_EMAIL = 'cffachurchcoimbatore@gmail.com'.toLowerCase();
+    if (user.email.toLowerCase() === PROTECTED_EMAIL && req.user.email.toLowerCase() !== PROTECTED_EMAIL) {
+      return res.status(403).json({ message: 'Holy access restricted: overall administrator account can only be modified by itself.' });
+    }
+    
     // Security check: old password reuse prevention
     if (password) {
       const isMatch = await user.comparePassword(password);
@@ -120,6 +126,13 @@ router.delete('/:id', auth, adminOnly, async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ message: 'User not found' });
+
+    // Sacred Protection: Overall Administrator cannot be deleted
+    const PROTECTED_EMAIL = 'cffachurchcoimbatore@gmail.com'.toLowerCase();
+    if (user.email.toLowerCase() === PROTECTED_EMAIL) {
+      return res.status(403).json({ message: 'Sacred protection active: the overall administrator account cannot be deleted.' });
+    }
+    
     if (user.role === 'admin') return res.status(400).json({ message: 'Cannot delete admin' });
     const deletedUserId = user._id;
     await user.deleteOne();

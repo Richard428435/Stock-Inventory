@@ -11,7 +11,9 @@ export const SystemProvider = ({ children }) => {
     logoUrl: '/pictures/Logoo_02-removebg-preview.png',
     backgroundUrl: '',
     primaryColor: '#3b82f6',
-    secondaryColor: '#f59e0b'
+    secondaryColor: '#f59e0b',
+    loginBackgroundUrl: '',
+    loginBackgroundType: 'video'
   });
   const [loading, setLoading] = useState(true);
 

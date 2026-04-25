@@ -2,31 +2,49 @@ import React, { useState, useEffect, useRef } from 'react';
 import api from '../../utils/api';
 import toast from 'react-hot-toast';
 import JsBarcode from 'jsbarcode';
+import { BrowserQRCodeSvgWriter } from '@zxing/browser';
 import BarcodePrintModal from '../../components/BarcodePrintModal';
 import { useAuth } from '../../context/AuthContext';
 
 function BarcodeCard({ item, onPrint, hasPermission }) {
   const svgRef = useRef();
   const canPrint = hasPermission('print_barcodes');
+  const [hwFormat, setHwFormat] = useState(localStorage.getItem('hw_format') || 'code128');
+
+  useEffect(() => {
+    const handlePref = () => setHwFormat(localStorage.getItem('hw_format') || 'code128');
+    window.addEventListener('prefs-changed', handlePref);
+    return () => window.removeEventListener('prefs-changed', handlePref);
+  }, []);
 
   useEffect(() => {
     if (svgRef.current && (item.barcode || item.sku)) {
       try {
-        JsBarcode(svgRef.current, item.barcode || item.sku, {
-          format: 'CODE128',
-          width: 1.8,
-          height: 48,
-          displayValue: true,
-          fontSize: 10,
-          margin: 6,
-          background: 'transparent',
-          lineColor: '#ffffff',
-        });
+        svgRef.current.innerHTML = '';
+        if (hwFormat === 'qr') {
+          const codeWriter = new BrowserQRCodeSvgWriter();
+          const svgElement = codeWriter.write(item.barcode || item.sku, 120, 120);
+          svgRef.current.appendChild(svgElement);
+        } else {
+          const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+          svg.classList.add("max-w-full");
+          svgRef.current.appendChild(svg);
+          JsBarcode(svg, item.barcode || item.sku, {
+            format: 'CODE128',
+            width: 1.8,
+            height: 48,
+            displayValue: true,
+            fontSize: 10,
+            margin: 6,
+            background: 'transparent',
+            lineColor: '#ffffff',
+          });
+        }
       } catch (e) {
         console.error('Barcode render error:', e);
       }
     }
-  }, [item]);
+  }, [item, hwFormat]);
 
   const isLowStock = item.quantity <= item.lowStockThreshold;
 
@@ -65,8 +83,8 @@ function BarcodeCard({ item, onPrint, hasPermission }) {
         </div>
 
         {/* Barcode display */}
-        <div className="bg-slate-100/50 dark:bg-black/20 rounded-2xl px-4 py-4 flex items-center justify-center border border-white/5 group-hover:border-slate-200 dark:border-white/10 transition-colors">
-          <svg ref={svgRef} className="max-w-full" />
+        <div className={`rounded-2xl px-4 py-4 flex items-center justify-center border transition-colors ${hwFormat === 'qr' ? 'bg-white border-white/5' : 'bg-slate-100/50 dark:bg-black/20 border-white/5 group-hover:border-slate-200 dark:border-white/10'}`}>
+          <div ref={svgRef} className="max-w-full flex justify-center" />
         </div>
 
         {/* SKU + Action */}
@@ -126,9 +144,7 @@ export default function BarcodePage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h2 className="text-4xl font-extrabold text-slate-800 dark:text-white tracking-tight">
-            Barcode <span className="text-gradient">Registry</span>
-          </h2>
+          <h2 className="text-4xl font-black text-slate-800 dark:text-white tracking-tight">Barcodes</h2>
           <p className="text-slate-500 dark:text-gray-400 text-sm font-medium mt-1">
             {loading ? 'Loading assets…' : `${filteredItems.length} of ${items.length} assets`}
           </p>

@@ -132,13 +132,15 @@ function ItemListRow({ item, onEdit, onDelete, onAdjust, onPrint, onView, hasPer
     <div className="glass-liquid group flex flex-col md:flex-row items-start md:items-center justify-between p-4 md:p-6 rounded-3xl border border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 transition-all duration-300 mb-4 shadow-xl relative cursor-pointer" onClick={onView}>
       
       <div className="flex items-center gap-6 w-full md:w-auto">
-        {/* Visual Header / Image */}
-        <div className="w-20 h-20 md:w-24 md:h-24 rounded-2xl overflow-hidden bg-[#0c0818] shadow-md flex-shrink-0">
+        {/* Visual Header / Image (Landscape Optimized) */}
+        <div className="w-32 h-20 rounded-xl overflow-hidden bg-[#0c0818]/60 shadow-lg flex-shrink-0 border border-slate-200 dark:border-white/10 group-hover:scale-105 transition-transform duration-500">
           {item.imageUrl ? (
-            <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+            <img src={item.imageUrl} alt={item.name} className="w-full h-full object-contain p-1 transition-transform duration-700" />
           ) : (
-            <div className="w-full h-full flex flex-col items-center justify-center text-white/50 bg-gradient-to-br from-white/10 to-transparent">
-              📦
+            <div className="w-full h-full flex flex-col items-center justify-center text-white/10 bg-gradient-to-br from-white/5 to-transparent">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
             </div>
           )}
         </div>
@@ -255,7 +257,7 @@ export default function ItemsPage() {
       <section className="space-y-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h2 className="text-4xl font-extrabold text-slate-800 dark:text-white tracking-tight">Items <span className="text-gradient">Catalog</span></h2>
+            <h2 className="text-4xl font-black text-slate-800 dark:text-white tracking-tight">Items</h2>
             <p className="text-slate-500 dark:text-gray-400 text-sm font-medium mt-1">Manage and track your church physical assets.</p>
           </div>
           <div className="flex items-center gap-3">

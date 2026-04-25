@@ -10,13 +10,26 @@ async function seed() {
     await mongoose.connect(process.env.MONGO_URI);
     console.log('Connected to MongoDB');
 
-    // Seed admin
-    const existing = await User.findOne({ email: 'admin@church.com' });
+    // Seed overall administrator
+    const adminEmail = 'cffachurchcoimbatore@gmail.com'.toLowerCase();
+    const existing = await User.findOne({ email: adminEmail });
     if (!existing) {
-      await User.create({ name: 'Admin', email: 'admin@church.com', password: 'admin123', role: 'admin' });
-      console.log('✅ Admin user created: admin@church.com / admin123');
+      await User.create({ 
+        name: 'CFFA Admin', 
+        email: adminEmail, 
+        password: 'Jai171065', 
+        role: 'admin',
+        active: true 
+      });
+      console.log('✅ CFFA Admin created');
     } else {
-      console.log('ℹ️  Admin already exists');
+      // Update existing admin account to ensure the password is set as requested
+      existing.name = 'CFFA Admin';
+      existing.password = 'Jai171065';
+      existing.role = 'admin';
+      existing.active = true;
+      await existing.save();
+      console.log('ℹ️  CFFA Admin credentials updated');
     }
 
     // Seed default ministries

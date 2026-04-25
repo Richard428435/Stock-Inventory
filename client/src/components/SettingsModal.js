@@ -34,12 +34,12 @@ function ToggleSwitch({ checked, onChange }) {
   );
 }
 
-export default function SettingsModal({ onClose }) {
+export default function SettingsModal({ onClose, initialTab = 'profile' }) {
   const { user, isAdmin } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { config, updateConfig } = useSystem();
   
-  const [activeTab, setActiveTab] = useState('profile');
+  const [activeTab, setActiveTab] = useState(initialTab === true ? 'profile' : initialTab);
   const [profileForm, setProfileForm] = useState({ name: user?.name || '', password: '', confirmPassword: '' });
   const [systemStats, setSystemStats] = useState({ api: 'checking', db: 'checking', smtp: 'checking' });
   const [saving, setSaving] = useState(false);
@@ -50,6 +50,8 @@ export default function SettingsModal({ onClose }) {
     churchName: config?.churchName || '',
     backgroundUrl: config?.backgroundUrl || '',
     logoUrl: config?.logoUrl || '',
+    loginBackgroundUrl: config?.loginBackgroundUrl || '',
+    loginBackgroundType: config?.loginBackgroundType || 'video',
     loginVerses: config?.loginVerses?.join('\n\n') || ''
   });
 
@@ -106,6 +108,27 @@ export default function SettingsModal({ onClose }) {
     }
   };
 
+  const handleFileUpload = async (file, field) => {
+    if (!file) return;
+    const reader = new FileReader();
+    const toastId = toast.loading(`Uploading ${file.name}...`);
+    
+    reader.onloadend = async () => {
+      try {
+        const res = await api.post('/system/upload', {
+          base64: reader.result,
+          filename: file.name
+        });
+        
+        setDesignerForm(p => ({ ...p, [field]: res.data.url }));
+        toast.success(`${file.name} uploaded to drive!`, { id: toastId });
+      } catch (err) {
+        toast.error(`Upload failed: ${err.response?.data?.message || err.message}`, { id: toastId });
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleSaveDesigner = async (e) => {
     e.preventDefault();
     setSaving(true);
@@ -114,11 +137,14 @@ export default function SettingsModal({ onClose }) {
         churchName: designerForm.churchName,
         backgroundUrl: designerForm.backgroundUrl,
         logoUrl: designerForm.logoUrl,
+        loginBackgroundUrl: designerForm.loginBackgroundUrl,
+        loginBackgroundType: designerForm.loginBackgroundType,
         loginVerses: designerForm.loginVerses.split('\n').map(v => v.trim()).filter(Boolean)
       });
-      toast.success('App Restyled Globally!', { icon: '🎨' });
+      toast.success('App Restyled Globally!');
     } catch (err) {
-      toast.error('Failed to update app designer settings');
+      const msg = err.response?.data?.message || err.message || 'Failed to update settings';
+      toast.error(`Save Failed: ${msg}`);
     } finally {
       setSaving(false);
     }
@@ -268,69 +294,18 @@ export default function SettingsModal({ onClose }) {
         
         {/* Header */}
         <div className="px-6 py-5 border-b border-slate-200 dark:border-white/10 flex justify-between items-center bg-white/[0.05]">
-          <h2 className="text-xl font-bold text-slate-800 dark:text-white drop-shadow-sm">Settings</h2>
+          <h2 className="text-xl font-bold text-slate-800 dark:text-white drop-shadow-sm capitalize">
+            {activeTab === 'preferences' ? 'Settings' : 
+             activeTab === 'designer' ? 'Theme Designer' : 
+             activeTab === 'system' ? 'Data Export' : 
+             activeTab === 'update' ? 'Software Update' : 
+             activeTab}
+          </h2>
           <button onClick={onClose} className="text-slate-500 dark:text-white/40 hover:text-slate-800 dark:hover:text-white transition-colors bg-white/50 dark:bg-white/5 hover:bg-white/80 dark:hover:bg-white/10 rounded-full w-8 h-8 flex items-center justify-center drop-shadow-sm">✕</button>
         </div>
 
         <div className="flex flex-col md:flex-row flex-1 min-h-0">
-          {/* Sidebar Tabs */}
-          <aside className="w-full md:w-56 p-4 border-r border-slate-200 dark:border-white/10 space-y-1 bg-white/30 dark:bg-white/5 flex-shrink-0 overflow-y-auto">
-            <button 
-              onClick={() => setActiveTab('profile')}
-              className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-all ${activeTab === 'profile' ? 'bg-white/80 dark:bg-white/10 text-slate-900 dark:text-white shadow-sm border border-slate-200 dark:border-white/5' : 'text-slate-600 dark:text-white/50 hover:bg-white/40 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-white'}`}
-            >
-              👤 Profile
-            </button>
-            <button 
-              onClick={() => setActiveTab('preferences')}
-              className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-all ${activeTab === 'preferences' ? 'bg-white/80 dark:bg-white/10 text-slate-900 dark:text-white shadow-sm border border-slate-200 dark:border-white/5' : 'text-slate-600 dark:text-white/50 hover:bg-white/40 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-white'}`}
-            >
-              ⚙️ Preferences
-            </button>
-            <button 
-              onClick={() => setActiveTab('notifications')}
-              className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-all ${activeTab === 'notifications' ? 'bg-white/80 dark:bg-white/10 text-slate-900 dark:text-white shadow-sm border border-slate-200 dark:border-white/5' : 'text-slate-600 dark:text-white/50 hover:bg-white/40 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-white'}`}
-            >
-              🔔 Notifications
-            </button>
-            <button 
-              onClick={() => setActiveTab('hardware')}
-              className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-all ${activeTab === 'hardware' ? 'bg-white/80 dark:bg-white/10 text-slate-900 dark:text-white shadow-sm border border-slate-200 dark:border-white/5' : 'text-slate-600 dark:text-white/50 hover:bg-white/40 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-white'}`}
-            >
-              📷 Hardware
-            </button>
-            <button 
-              onClick={() => setActiveTab('help')}
-              className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-all ${activeTab === 'help' ? 'bg-white/80 dark:bg-white/10 text-slate-900 dark:text-white shadow-sm border border-slate-200 dark:border-white/5' : 'text-slate-600 dark:text-white/50 hover:bg-white/40 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-white'}`}
-            >
-              ❓ Help
-            </button>
-
-            {isAdmin && (
-              <div className="pt-2 mt-2 border-t border-slate-300 dark:border-white/10 space-y-1">
-                <button 
-                  onClick={() => setActiveTab('designer')}
-                  className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-all ${activeTab === 'designer' ? 'bg-white/80 dark:bg-white/10 text-slate-900 dark:text-white shadow-sm border border-slate-200 dark:border-white/5' : 'text-slate-600 dark:text-white/50 hover:bg-white/40 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-white'}`}
-                >
-                  🎨 App Designer
-                </button>
-                <button 
-                  onClick={() => setActiveTab('system')}
-                  className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-all ${activeTab === 'system' ? 'bg-white/80 dark:bg-white/10 text-slate-900 dark:text-white shadow-sm border border-slate-200 dark:border-white/5' : 'text-slate-600 dark:text-white/50 hover:bg-white/40 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-white'}`}
-                >
-                  🛠️ Data Export
-                </button>
-                <button 
-                  onClick={() => setActiveTab('update')}
-                  className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-all ${activeTab === 'update' ? 'bg-white/80 dark:bg-white/10 text-slate-900 dark:text-white shadow-sm border border-slate-200 dark:border-white/5' : 'text-slate-600 dark:text-white/50 hover:bg-white/40 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-white'}`}
-                >
-                  🛡️ Software Update
-                </button>
-              </div>
-            )}
-          </aside>
-
-          {/* Main Settings Area */}
+          {/* Main Settings Area - High Isolation Mode (Full Width) */}
           <div className="flex-1 p-6 md:p-8 overflow-y-auto bg-transparent inventory-scrollbar relative">
             
             {activeTab === 'profile' && (
@@ -462,7 +437,7 @@ export default function SettingsModal({ onClose }) {
               <div className="max-w-xl space-y-6 fade-in">
                 <div>
                   <h3 className="text-lg font-extrabold text-slate-800 dark:text-white drop-shadow-sm flex items-center gap-2">
-                    <span>🎨</span> App Designer
+                    Theme Designer
                   </h3>
                   <p className="text-sm text-slate-600 dark:text-white/60 mt-1">
                     Change root backgrounds and logos. These changes affect <strong>all</strong> users globally.
@@ -483,6 +458,33 @@ export default function SettingsModal({ onClose }) {
                   </div>
 
                   <div>
+                    <label className={labelClass}>Organization Logo</label>
+                    <div className="mt-2 flex items-center gap-4 p-3 bg-white/40 dark:bg-white/5 border border-dashed border-slate-300 dark:border-white/20 rounded-xl">
+                      {designerForm.logoUrl && (designerForm.logoUrl.startsWith('data:') || designerForm.logoUrl.startsWith('/uploads/')) ? (
+                         <div className="w-16 h-16 rounded-lg overflow-hidden border border-slate-200 dark:border-white/10 shadow-sm flex-shrink-0">
+                           <img src={designerForm.logoUrl} alt="Logo preview" className="w-full h-full object-contain p-1" />
+                         </div>
+                      ) : null}
+                      
+                      <div className="flex-1 flex flex-wrap gap-2 items-center">
+                        <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e.target.files[0], 'logoUrl')} className="hidden" id="logo-upload" />
+                        <label htmlFor="logo-upload" className="cursor-pointer inline-flex items-center justify-center px-4 py-2.5 bg-slate-200 hover:bg-slate-300 dark:bg-white/10 dark:hover:bg-white/20 text-slate-700 dark:text-white text-xs font-bold uppercase tracking-widest rounded-lg transition-colors">
+                          {designerForm.logoUrl ? 'Update Drive' : 'Upload to Drive'}
+                        </label>
+                        {designerForm.logoUrl && designerForm.logoUrl !== '/pictures/Logoo_02-removebg-preview.png' && (
+                          <button 
+                            type="button" 
+                            onClick={() => setDesignerForm(p => ({ ...p, logoUrl: '' }))}
+                            className="inline-flex items-center justify-center px-4 py-2.5 bg-red-100 hover:bg-red-200 dark:bg-red-500/10 dark:hover:bg-red-500/20 text-red-600 dark:text-red-400 text-xs font-bold uppercase tracking-widest rounded-lg transition-colors outline-none"
+                          >
+                            Remove
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
                     <label className={labelClass}>Global Background Image</label>
                     <div className="mt-2 flex items-center gap-4 p-3 bg-white/40 dark:bg-white/5 border border-dashed border-slate-300 dark:border-white/20 rounded-xl">
                       {designerForm.backgroundUrl && designerForm.backgroundUrl.startsWith('data:image') ? (
@@ -494,16 +496,9 @@ export default function SettingsModal({ onClose }) {
                       ) : null}
                       
                       <div className="flex-1 flex flex-wrap gap-2 items-center">
-                        <input type="file" accept="image/*" onChange={(e) => {
-                           const file = e.target.files[0];
-                           if (file) {
-                             const reader = new FileReader();
-                             reader.onloadend = () => setDesignerForm(p => ({ ...p, backgroundUrl: reader.result }));
-                             reader.readAsDataURL(file);
-                           }
-                        }} className="hidden" id="bg-upload" />
+                        <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e.target.files[0], 'backgroundUrl')} className="hidden" id="bg-upload" />
                         <label htmlFor="bg-upload" className="cursor-pointer inline-flex items-center justify-center px-4 py-2.5 bg-slate-200 hover:bg-slate-300 dark:bg-white/10 dark:hover:bg-white/20 text-slate-700 dark:text-white text-xs font-bold uppercase tracking-widest rounded-lg transition-colors">
-                          {designerForm.backgroundUrl ? 'Upload Different Image' : 'Upload Image File'}
+                          {designerForm.backgroundUrl ? 'Update Drive' : 'Upload to Drive'}
                         </label>
                         {designerForm.backgroundUrl && (
                           <button 
@@ -516,20 +511,64 @@ export default function SettingsModal({ onClose }) {
                         )}
                       </div>
                     </div>
+                  </div>
+
+                  <div className="pt-4 border-t border-slate-300 dark:border-white/10 mt-6 pt-6">
+                    <h4 className="text-md font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                       Login Page Designer
+                    </h4>
                     
-                    <div className="mt-3 flex items-center gap-3">
-                       <span className="text-[10px] text-slate-500 dark:text-white/40 font-bold uppercase tracking-widest">OR URL:</span>
-                       <input 
-                         type="url"
-                         className={inputClass + " flex-1 !py-1.5 !text-xs !bg-transparent"}
-                         value={designerForm.backgroundUrl.startsWith('data:image') ? '' : designerForm.backgroundUrl}
-                         onChange={e => setDesignerForm(p => ({ ...p, backgroundUrl: e.target.value }))}
-                         placeholder="https://images.unsplash.com/photo-..."
-                       />
+                    <div className="space-y-4">
+                      <div>
+                        <label className={labelClass}>Background Type</label>
+                        <div className="flex gap-2">
+                          <button 
+                            type="button"
+                            onClick={() => setDesignerForm(p => ({ ...p, loginBackgroundType: 'video' }))}
+                            className={`flex-1 py-2 rounded-lg text-xs font-bold uppercase tracking-widest border transition-all ${designerForm.loginBackgroundType === 'video' ? 'bg-blue-500 text-white border-blue-400 shadow-md' : 'bg-white/40 dark:bg-white/5 text-slate-500 border-slate-200 dark:border-white/10'}`}
+                          >
+                            Video
+                          </button>
+                          <button 
+                            type="button"
+                            onClick={() => setDesignerForm(p => ({ ...p, loginBackgroundType: 'image' }))}
+                            className={`flex-1 py-2 rounded-lg text-xs font-bold uppercase tracking-widest border transition-all ${designerForm.loginBackgroundType === 'image' ? 'bg-blue-500 text-white border-blue-400 shadow-md' : 'bg-white/40 dark:bg-white/5 text-slate-500 border-slate-200 dark:border-white/10'}`}
+                          >
+                            Image
+                          </button>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className={labelClass}>Login Background {designerForm.loginBackgroundType === 'video' ? 'Video' : 'Image'}</label>
+                        <div className="mt-2 flex items-center gap-4 p-3 bg-white/40 dark:bg-white/5 border border-dashed border-slate-300 dark:border-white/20 rounded-xl">
+                          {designerForm.loginBackgroundUrl && (designerForm.loginBackgroundUrl.startsWith('data:') || designerForm.loginBackgroundUrl.startsWith('/uploads/')) ? (
+                             <div className="w-16 h-16 rounded-lg overflow-hidden border border-slate-200 dark:border-white/10 shadow-sm flex-shrink-0 flex items-center justify-center bg-slate-800">
+                               {designerForm.loginBackgroundType === 'video' ? <span className="text-xs text-white/40">MP4</span> : <img src={designerForm.loginBackgroundUrl} alt="Preview" className="w-full h-full object-cover" />}
+                             </div>
+                          ) : null}
+                          
+                          <div className="flex-1 flex flex-wrap gap-2 items-center">
+                            <input type="file" accept={designerForm.loginBackgroundType === 'video' ? "video/*" : "image/*"} onChange={(e) => handleFileUpload(e.target.files[0], 'loginBackgroundUrl')} className="hidden" id="login-bg-upload" />
+                            <label htmlFor="login-bg-upload" className="cursor-pointer inline-flex items-center justify-center px-4 py-2.5 bg-slate-200 hover:bg-slate-300 dark:bg-white/10 dark:hover:bg-white/20 text-slate-700 dark:text-white text-xs font-bold uppercase tracking-widest rounded-lg transition-colors">
+                              {designerForm.loginBackgroundUrl ? 'Update Drive' : 'Upload to Drive'}
+                            </label>
+                            {designerForm.loginBackgroundUrl && (
+                              <button 
+                                type="button" 
+                                onClick={() => setDesignerForm(p => ({ ...p, loginBackgroundUrl: '' }))}
+                                className="inline-flex items-center justify-center px-4 py-2.5 bg-red-100 hover:bg-red-200 dark:bg-red-500/10 dark:hover:bg-red-500/20 text-red-600 dark:text-red-400 text-xs font-bold uppercase tracking-widest rounded-lg transition-colors outline-none"
+                              >
+                                Remove
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
-                  <div>
+                  <div className="pt-4 border-t border-slate-300 dark:border-white/10 mt-6">
                     <label className={labelClass}>Login Page Verses</label>
                     <p className="text-xs text-slate-500 dark:text-white/40 mb-2">
                        Enter the rotating verses displayed on the login page. Add each verse on a new line. Space them out with an extra line break for readability if you want.

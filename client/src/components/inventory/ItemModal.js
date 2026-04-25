@@ -3,7 +3,7 @@ import api from '../../utils/api';
 import toast from 'react-hot-toast';
 
 export default function ItemModal({ item, onClose, onSave, categories }) {
-  const [form, setForm] = useState(item || { name: '', model: '', sku: '', category: categories[0]?.name || '', location: '', quantity: 0, lowStockThreshold: 5, warrantyAvailable: false, warrantyExpiry: '', warrantyCardImage: '', description: '', imageUrl: '', purchasedFrom: '', shopAddress: '' });
+  const [form, setForm] = useState(item || { name: '', model: '', sku: '', category: categories[0]?.name || '', location: '', quantity: 0, lowStockThreshold: 5, warrantyAvailable: false, warrantyExpiry: '', warrantyCardImage: '', invoiceDocument: '', description: '', imageUrl: '', purchasedFrom: '', shopAddress: '', shopContact: '' });
   const [saving, setSaving] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -40,7 +40,12 @@ export default function ItemModal({ item, onClose, onSave, categories }) {
             </div>
             <div>
               <label className="label !text-slate-800 dark:!text-white">SKU / Serial Number</label>
-              <input className="input !bg-white/60 dark:!bg-white/5 !border-slate-200 dark:!border-white/10 !text-slate-800 dark:!text-white h-12 rounded-xl" value={form.sku} onChange={e => set('sku', e.target.value)} />
+              <input 
+                className="input !bg-gray-100 dark:!bg-white/5 !border-slate-300 dark:!border-white/10 !text-slate-500 dark:!text-gray-400 h-12 rounded-xl cursor-not-allowed select-none" 
+                value={item?.sku || 'Auto-generated'} 
+                disabled 
+                readOnly
+              />
             </div>
             <div>
               <label className="label !text-slate-800 dark:!text-white">Category *</label>
@@ -69,6 +74,35 @@ export default function ItemModal({ item, onClose, onSave, categories }) {
               <input className="input !bg-white/60 dark:!bg-white/5 !border-slate-200 dark:!border-white/10 !text-slate-800 dark:!text-white h-12 rounded-xl" value={form.shopAddress} onChange={e => set('shopAddress', e.target.value)} placeholder="Physical or web address" />
             </div>
             
+            <div className="md:col-span-2">
+              <label className="label !text-slate-800 dark:!text-white">Shop Contact / Mobile No.</label>
+              <input className="input !bg-white/60 dark:!bg-white/5 !border-slate-200 dark:!border-white/10 !text-slate-800 dark:!text-white h-12 rounded-xl" value={form.shopContact} onChange={e => set('shopContact', e.target.value)} placeholder="+1 (234) 567-890" />
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="label !text-slate-800 dark:!text-white">Invoice Document (PDF/Image)</label>
+              <div className="flex items-center gap-2">
+                <input type="file" accept="image/*,application/pdf" onChange={(e) => {
+                   const file = e.target.files[0];
+                   if (file) {
+                     if (file.size > 10 * 1024 * 1024) return toast.error('File too large. Max 10MB.');
+                     const reader = new FileReader();
+                     reader.onloadend = () => set('invoiceDocument', reader.result);
+                     reader.readAsDataURL(file);
+                   }
+                }} className="hidden" id="invoice-upload" />
+                <label htmlFor="invoice-upload" className="flex-1 cursor-pointer bg-white/60 dark:bg-white/5 hover:bg-white/80 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 rounded-xl px-4 h-12 text-sm text-slate-800 dark:text-white/60 flex items-center gap-3 transition-colors">
+                  <span className="text-lg opacity-60">🧾</span>
+                  <span className="truncate font-medium">{form.invoiceDocument ? 'Invoice Attached' : 'Upload Invoice Bill...'}</span>
+                </label>
+                {form.invoiceDocument && (
+                  <button type="button" onClick={() => set('invoiceDocument', '')} className="h-12 w-12 flex items-center justify-center text-red-500 bg-red-50 dark:bg-red-500/10 hover:bg-red-100 dark:hover:bg-red-500/20 border border-red-200 dark:border-red-500/20 rounded-xl transition-colors">
+                    ✕
+                  </button>
+                )}
+              </div>
+            </div>
+            
             <div className="col-span-full space-y-4">
               <div className="flex items-center gap-3">
                  <input type="checkbox" id="warranty" checked={form.warrantyAvailable} onChange={e => set('warrantyAvailable', e.target.checked)} className="w-5 h-5 accent-white rounded" />
@@ -82,8 +116,28 @@ export default function ItemModal({ item, onClose, onSave, categories }) {
                     <input type="date" className="input !bg-white/60 dark:!bg-white/5 !border-slate-200 dark:!border-white/10 !text-slate-800 dark:!text-white h-12 rounded-xl" value={form.warrantyExpiry ? form.warrantyExpiry.split('T')[0] : ''} onChange={e => set('warrantyExpiry', e.target.value)} />
                   </div>
                   <div>
-                    <label className="label !text-slate-800 dark:!text-white">Warranty Info / Note</label>
-                    <input className="input !bg-white/60 dark:!bg-white/5 !border-slate-200 dark:!border-white/10 !text-slate-800 dark:!text-white h-12 rounded-xl" value={form.description} onChange={e => set('description', e.target.value)} placeholder="Card number, provider, etc." />
+                    <label className="label !text-slate-800 dark:!text-white">Warranty Document (PDF/Image)</label>
+                    <div className="flex items-center gap-2">
+                      <input type="file" accept="image/*,application/pdf" onChange={(e) => {
+                         const file = e.target.files[0];
+                         if (file) {
+                           // 16MB warning/protection check since base64 expands ~30%
+                           if (file.size > 10 * 1024 * 1024) return toast.error('File too large. Max 10MB.');
+                           const reader = new FileReader();
+                           reader.onloadend = () => set('warrantyCardImage', reader.result);
+                           reader.readAsDataURL(file);
+                         }
+                      }} className="hidden" id="warranty-upload" />
+                      <label htmlFor="warranty-upload" className="flex-1 cursor-pointer bg-white/60 dark:bg-white/5 hover:bg-white/80 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 rounded-xl px-4 h-12 text-sm text-slate-800 dark:text-white/60 flex items-center gap-3 transition-colors">
+                        <span className="text-lg opacity-60">📎</span>
+                        <span className="truncate font-medium">{form.warrantyCardImage ? 'Document Attached' : 'Upload Bill/Card...'}</span>
+                      </label>
+                      {form.warrantyCardImage && (
+                        <button type="button" onClick={() => set('warrantyCardImage', '')} className="h-12 w-12 flex items-center justify-center text-red-500 bg-red-50 dark:bg-red-500/10 hover:bg-red-100 dark:hover:bg-red-500/20 border border-red-200 dark:border-red-500/20 rounded-xl transition-colors">
+                          ✕
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}

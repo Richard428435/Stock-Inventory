@@ -43,6 +43,12 @@ export default function LoginPage() {
     '"Then those who feared the Lord spoke with one another. The Lord paid attention and heard them..." Malachi 3:16'
   ];
 
+  // Hide global background on login page
+  useEffect(() => {
+    document.body.classList.add('no-global-bg');
+    return () => document.body.classList.remove('no-global-bg');
+  }, []);
+
   // Auto rotate verses
   useEffect(() => {
     const timer = setInterval(() => {
@@ -116,17 +122,25 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen relative overflow-hidden">
 
-      {/* Background Video (Hides if custom background image is applied in App Designer) */}
-      {!config?.backgroundUrl && (
+      {/* Background Media (Dynamic from App Designer) */}
+      {config?.loginBackgroundType === 'video' ? (
         <video
           autoPlay
           muted
           loop
           playsInline
+          key={config?.loginBackgroundUrl || 'default'}
           className="absolute inset-0 w-full h-full object-cover opacity-80"
         >
-          <source src="/videos/Good_friday_art_texture_3_4k.mp4" type="video/mp4" />
+          <source src={config?.loginBackgroundUrl || "/videos/Good_friday_art_texture_3_4k.mp4"} type="video/mp4" />
         </video>
+      ) : (
+        config?.loginBackgroundUrl && (
+          <div 
+            className="absolute inset-0 w-full h-full bg-cover bg-center opacity-80"
+            style={{ backgroundImage: `url(${config.loginBackgroundUrl})` }}
+          />
+        )
       )}
 
       {/* Dark overlay */}
@@ -173,16 +187,27 @@ export default function LoginPage() {
                     />
                   </div>
 
-                  <div className="glass-liquid bg-white dark:bg-white/20 backdrop-blur rounded-2xl px-4 py-3 flex items-center gap-3">
+                  <div className="glass-liquid bg-white dark:bg-white/20 backdrop-blur rounded-2xl px-4 py-3 flex items-center gap-3 group relative">
                     <span className="text-xl">🔒</span>
                     <input
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       placeholder="Password"
                       className="w-full bg-transparent text-slate-800 dark:text-gray-100 placeholder-slate-500 dark:placeholder-gray-400 outline-none border-none"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
                     />
+                    <button 
+                      type="button" 
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="opacity-40 hover:opacity-100 transition-opacity outline-none pr-1"
+                    >
+                      {showPassword ? (
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                      ) : (
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                      )}
+                    </button>
                   </div>
 
                   <button

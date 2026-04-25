@@ -68,7 +68,12 @@ export default function InventoryLayout() {
             </div>
 
             {/* Three Dots Options Menu */}
-            <div className="relative">
+            {/* Three Dots Options Menu */}
+            <div 
+              className="relative" 
+              onMouseEnter={() => setShowOptions(true)}
+              onMouseLeave={() => setShowOptions(false)}
+            >
               <button
                 onClick={() => setShowOptions(!showOptions)}
                 className="text-slate-500 dark:text-gray-400 hover:text-slate-800 dark:text-white transition-colors p-1"
@@ -80,23 +85,50 @@ export default function InventoryLayout() {
               </button>
               
               {showOptions && (
-                <>
-                  <div className="fixed inset-0 z-40" onClick={() => setShowOptions(false)}></div>
-                  <div className="absolute right-0 mt-2 w-32 z-50 animate-fadeIn">
-                    <button
-                      onClick={() => { setShowSettings(true); setShowOptions(false); }}
-                      className="w-full text-right px-2 py-2 text-xs font-bold text-slate-800 dark:text-white hover:text-blue-500 dark:hover:text-blue-400 transition-colors uppercase tracking-widest drop-shadow-md"
-                    >
-                      ⚙️ Settings
-                    </button>
-                  </div>
-                </>
-              )}
+                <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 w-48 z-50 animate-fadeIn">
+                  <div className="glass-liquid border border-slate-300 dark:border-white/20 rounded-2xl p-2 shadow-2xl transition-all duration-300">
+                  <button
+                    onClick={() => { setShowSettings('profile'); setShowOptions(false); }}
+                    className="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-800 dark:text-white hover:bg-white/10 rounded-xl transition-all uppercase tracking-widest"
+                  >
+                    Profile
+                  </button>
+                  <button
+                    onClick={() => { setShowSettings('preferences'); setShowOptions(false); }}
+                    className="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-800 dark:text-white hover:bg-white/10 rounded-xl transition-all uppercase tracking-widest"
+                  >
+                    Settings
+                  </button>
+                  {isAdmin && (
+                    <>
+                      <button
+                        onClick={() => { setShowSettings('designer'); setShowOptions(false); }}
+                        className="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-800 dark:text-white hover:bg-white/10 rounded-xl transition-all uppercase tracking-widest"
+                      >
+                        Theme Designer
+                      </button>
+                      <button
+                        onClick={() => { setShowSettings('system'); setShowOptions(false); }}
+                        className="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-800 dark:text-white hover:bg-white/10 rounded-xl transition-all uppercase tracking-widest"
+                      >
+                        Data Export
+                      </button>
+                      <button
+                        onClick={() => { setShowSettings('update'); setShowOptions(false); }}
+                        className="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-800 dark:text-white hover:bg-white/10 rounded-xl transition-all uppercase tracking-widest"
+                      >
+                        Software Update
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
             </div>
 
             <button
               onClick={() => setShowLogoutConfirm(true)}
-              className="text-slate-500 dark:text-gray-400 hover:text-red-400 transition-colors"
+              className="text-slate-500 dark:text-gray-400 hover:text-red-400 transition-colors ml-2"
               title="Logout"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -158,7 +190,7 @@ export default function InventoryLayout() {
       )}
 
       {/* Settings Modal */}
-      {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
+      {showSettings && <SettingsModal initialTab={showSettings} onClose={() => setShowSettings(false)} />}
     </div>
   );
 }

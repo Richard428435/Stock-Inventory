@@ -13,10 +13,12 @@ const itemSchema = new mongoose.Schema({
   warrantyExpiry: { type: Date },
   warrantyCardImage: { type: String },
   warrantyCard: { type: String },
+  invoiceDocument: { type: String },
   description: { type: String },
   imageUrl: { type: String },
   purchasedFrom: { type: String },
-  shopAddress: { type: String }
+  shopAddress: { type: String },
+  shopContact: { type: String }
 }, { timestamps: true });
 
 itemSchema.virtual('isLowStock').get(function() {

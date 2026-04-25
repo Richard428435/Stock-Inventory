@@ -213,7 +213,11 @@ export default function UsersPage() {
                     </td>
                     <td className="px-8 py-6 text-right">
                       <div className="flex items-center justify-end gap-3 opacity-20 group-hover:opacity-100 transition-opacity">
-                        {!isMe && (
+                        {u.email.toLowerCase() === 'cffachurchcoimbatore@gmail.com'.toLowerCase() ? (
+                          <span className="text-[10px] font-black text-amber-500/60 uppercase tracking-widest bg-amber-500/5 px-3 py-1 rounded-full border border-amber-500/10 shadow-sm">
+                             Sacred Authority
+                          </span>
+                        ) : !isMe && (
                           <>
                             <button 
                               onClick={() => { setSelected(u); setForm({ name: u.name, email: u.email, password: '', role: u.role === 'user' ? 'staff' : u.role }); setModal('edit'); }}
