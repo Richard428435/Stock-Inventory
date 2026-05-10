@@ -120,7 +120,7 @@ export default function LoginPage() {
       <div className="relative z-10 min-h-screen flex items-center justify-center px-6">
 
         {/* Bible verses - left bottom - rotating */}
-        <div className="absolute bottom-24 left-8 text-sm md:text-base lg:text-lg xl:text-xl text-white/90 max-w-2xl whitespace-nowrap verse-font fade-in drop-shadow-lg hidden md:block">
+        <div className="absolute bottom-24 left-8 text-sm md:text-base lg:text-lg xl:text-xl text-white/90 max-w-[40%] lg:max-w-[50%] verse-font fade-in drop-shadow-lg hidden md:block">
           {versesList[verseIndex]}
         </div>
 
