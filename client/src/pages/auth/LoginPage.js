@@ -130,15 +130,15 @@ export default function LoginPage() {
         </div>
 
         {/* Right-aligned Single Container */}
-        <div className="w-full flex justify-center lg:justify-end md:pr-10 lg:pr-24 xl:pr-36 items-center h-screen px-2">
-          <div className="glass-liquid bg-white/60 dark:bg-white/5 backdrop-blur-3xl border border-slate-300 dark:border-white/20 rounded-3xl shadow-2xl w-full max-w-[400px] md:max-w-none md:w-[440px] lg:w-[480px] p-8 md:p-10 text-center min-h-[520px] max-h-[90vh] flex flex-col justify-center">
+        <div className="w-full flex justify-center lg:justify-end md:pr-10 lg:pr-24 xl:pr-36 items-center min-h-screen py-12 px-2 z-10 relative overflow-y-auto">
+          <div className="glass-liquid bg-white/60 dark:bg-white/5 backdrop-blur-3xl border border-slate-300 dark:border-white/20 rounded-3xl shadow-2xl w-full max-w-[400px] md:max-w-none md:w-[440px] lg:w-[480px] p-6 sm:p-8 md:p-10 text-center flex flex-col justify-center my-auto">
             
             {view === 'login' && (
               <div className="fade-in space-y-6">
                 <img
                   src={config?.logoUrl || "/pictures/Logoo_02-removebg-preview.png"}
                   alt="Organization Logo"
-                  className="w-[180px] h-[180px] md:w-[200px] md:h-[200px] object-cover rounded-2xl mx-auto mb-4 drop-shadow-2xl brightness-110"
+                  className="w-[120px] h-[120px] sm:w-[150px] sm:h-[150px] md:w-[180px] md:h-[180px] object-cover rounded-2xl mx-auto mb-4 drop-shadow-2xl brightness-110"
                 />
                 <div className="space-y-1">
                   <h2 className="text-slate-800 dark:text-white text-3xl font-bold">{getGreeting()}</h2>
