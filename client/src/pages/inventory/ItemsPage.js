@@ -126,6 +126,7 @@ function ItemCard({ item, onEdit, onDelete, onAdjust, onPrint, onView, hasPermis
 }
 
 function ItemListRow({ item, onEdit, onDelete, onAdjust, onPrint, onView, hasPermission }) {
+  const [localShowDelete, setLocalShowDelete] = useState(false);
   const isLowStock = item.quantity <= item.lowStockThreshold;
 
   return (
@@ -171,14 +172,25 @@ function ItemListRow({ item, onEdit, onDelete, onAdjust, onPrint, onView, hasPer
         {/* Actions Options */}
         <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
            {hasPermission('adjust_stock') && (
-             <button onClick={onAdjust} className="px-4 py-2 bg-slate-100 dark:bg-white/5 rounded-xl hover:bg-white dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-slate-800 dark:text-white transition-all shadow-md active:scale-95 text-[10px] font-bold uppercase tracking-widest">
+             <button onClick={(e) => { e.stopPropagation(); onAdjust(); }} className="px-4 py-2 bg-slate-100 dark:bg-white/5 rounded-xl hover:bg-white dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-slate-800 dark:text-white transition-all shadow-md active:scale-95 text-[10px] font-bold uppercase tracking-widest">
                Adjust
              </button>
            )}
            {hasPermission('delete_item') && (
-             <button onClick={onDelete} className="px-4 py-2 bg-red-100 dark:bg-red-500/10 rounded-xl hover:bg-red-200 dark:hover:bg-red-500/20 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 transition-all shadow-md active:scale-95 text-[10px] font-bold uppercase tracking-widest">
-               Delete
-             </button>
+             !localShowDelete ? (
+               <button onClick={(e) => { e.stopPropagation(); setLocalShowDelete(true); }} className="px-4 py-2 bg-red-100 dark:bg-red-500/10 rounded-xl hover:bg-red-200 dark:hover:bg-red-500/20 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 transition-all shadow-md active:scale-95 text-[10px] font-bold uppercase tracking-widest">
+                 Delete
+               </button>
+             ) : (
+               <div className="flex items-center gap-2 animate-fadeIn">
+                 <button onClick={(e) => { e.stopPropagation(); onDelete(); }} className="px-4 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 border border-red-600 transition-all shadow-md active:scale-95 text-[10px] font-bold uppercase tracking-widest">
+                   Confirm
+                 </button>
+                 <button onClick={(e) => { e.stopPropagation(); setLocalShowDelete(false); }} className="px-4 py-2 bg-slate-200 dark:bg-white/10 text-slate-800 dark:text-white rounded-xl hover:bg-slate-300 dark:hover:bg-white/20 transition-all shadow-md active:scale-95 text-[10px] font-bold uppercase tracking-widest">
+                   Cancel
+                 </button>
+               </div>
+             )
            )}
         </div>
       </div>
@@ -242,7 +254,6 @@ export default function ItemsPage() {
   useEffect(() => { load(); }, [search, category]);
 
   const handleDelete = async (id) => {
-    if(!window.confirm("Are you sure you want to permanently delete this item?")) return;
     try {
       await api.delete(`/inventory/items/${id}`);
       toast.success('Item deleted');

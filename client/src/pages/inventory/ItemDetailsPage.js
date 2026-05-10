@@ -14,6 +14,7 @@ export default function ItemDetailsPage() {
   const [showEdit, setShowEdit] = useState(false);
   const [categories, setCategories] = useState([]);
   const [showBarcodePrint, setShowBarcodePrint] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const loadItem = async () => {
     try {
@@ -39,7 +40,6 @@ export default function ItemDetailsPage() {
   }, [id]);
 
   const handleDelete = async () => {
-    if (!window.confirm('Are you sure you want to delete this item?')) return;
     try {
       await api.delete(`/inventory/items/${id}`);
       toast.success('Item deleted');
@@ -81,9 +81,20 @@ export default function ItemDetailsPage() {
           <button onClick={() => setShowBarcodePrint(true)} className="px-6 py-3 rounded-2xl bg-white/60 dark:bg-white/5 text-slate-800 dark:text-white font-bold uppercase tracking-widest hover:bg-white hover:text-slate-900 active:scale-95 transition-all text-xs border border-slate-200 dark:border-white/10 shadow-lg">
             Print Barcode
           </button>
-          <button onClick={handleDelete} className="px-6 py-3 rounded-2xl bg-red-500/10 text-red-400 font-bold uppercase tracking-widest hover:bg-red-500 hover:text-slate-800 dark:text-white active:scale-95 transition-all text-xs border border-red-500/20 shadow-lg">
-            Delete
-          </button>
+          {!showDeleteConfirm ? (
+            <button onClick={() => setShowDeleteConfirm(true)} className="px-6 py-3 rounded-2xl bg-red-500/10 text-red-400 font-bold uppercase tracking-widest hover:bg-red-500 hover:text-slate-800 dark:text-white active:scale-95 transition-all text-xs border border-red-500/20 shadow-lg">
+              Delete
+            </button>
+          ) : (
+            <div className="flex items-center gap-2 animate-fadeIn">
+              <button onClick={handleDelete} className="px-6 py-3 rounded-2xl bg-red-500 text-white font-bold uppercase tracking-widest hover:bg-red-600 active:scale-95 transition-all text-xs border border-red-600 shadow-lg">
+                Confirm
+              </button>
+              <button onClick={() => setShowDeleteConfirm(false)} className="px-6 py-3 rounded-2xl bg-slate-200 dark:bg-white/10 text-slate-800 dark:text-white font-bold uppercase tracking-widest hover:bg-slate-300 dark:hover:bg-white/20 active:scale-95 transition-all text-xs border border-slate-300 dark:border-white/20 shadow-lg">
+                Cancel
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
