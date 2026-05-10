@@ -1,7 +1,7 @@
+import React, { useRef, useEffect } from 'react';
 import { fixGoogleDriveUrl } from './utils/googleDrive';
 import { useTheme } from './context/ThemeContext';
 import { useSystem } from './context/SystemContext';
-
 export default function VantaBackground() {
   const ref = useRef(null);
   const { theme } = useTheme();
