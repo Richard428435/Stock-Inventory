@@ -39,7 +39,7 @@ export default function InventoryLayout() {
       <header className="sticky top-0 z-50 px-6 py-4">
         <div className="flex items-center justify-between glass-liquid rounded-2xl px-6 py-3 border border-slate-300 dark:border-white/20 shadow-2xl">
           {/* Navigation Links - left side */}
-          <nav className="hidden md:flex items-center gap-2 ml-0 pl-2">
+          <nav className="hidden lg:flex items-center gap-2 ml-0 pl-2">
             {navItems.map((item) => (
               <Link
                 key={item.path}
@@ -141,14 +141,14 @@ export default function InventoryLayout() {
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 overflow-x-hidden overflow-y-auto pt-24 pb-32">
+      <main className="flex-1 overflow-x-hidden overflow-y-auto py-6 lg:py-8 pb-32">
         <div className="max-w-7xl mx-auto px-4 md:px-6">
           <Outlet />
         </div>
       </main>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-1 left-1 right-1 z-50 glass-liquid border border-slate-200 dark:border-white/10 px-4 py-4 rounded-2xl flex justify-around items-center shadow-2xl">
+      <nav className="lg:hidden fixed bottom-1 left-1 right-1 z-50 glass-liquid border border-slate-200 dark:border-white/10 px-2 sm:px-4 py-3 sm:py-4 rounded-2xl flex justify-around items-center shadow-2xl">
         {navItems.map((item) => (
           <Link
             key={item.path}
