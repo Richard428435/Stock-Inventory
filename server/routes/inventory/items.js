@@ -102,8 +102,8 @@ router.get('/:id', auth, async (req, res) => {
   }
 });
 
-// Create item (manager or admin)
-router.post('/', auth, managerOrAdmin, async (req, res) => {
+// Create item (all levels)
+router.post('/', auth, async (req, res) => {
   try {
     const data = req.body;
     if (!data.sku) data.sku = `SKU-${Date.now()}`;
