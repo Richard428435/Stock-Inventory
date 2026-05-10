@@ -72,7 +72,7 @@ export function AuthProvider({ children }) {
   const PERMISSIONS = {
     admin: ['add_item','edit_item','delete_item','manage_categories','print_barcodes','manage_users','adjust_stock','view_logs', 'add_maintenance','close_maintenance'],
     manager: ['add_item','edit_item','delete_item','manage_categories', 'print_barcodes', 'adjust_stock','view_logs','add_maintenance','close_maintenance'],
-    staff: ['add_item', 'adjust_stock','view_logs','add_maintenance'],
+    staff: ['add_item', 'edit_item', 'adjust_stock','view_logs','add_maintenance'],
   };
 
   const hasPermission = (action) => {

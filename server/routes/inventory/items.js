@@ -116,8 +116,8 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
-// Update item (manager or admin)
-router.put('/:id', auth, managerOrAdmin, async (req, res) => {
+// Update item (all levels)
+router.put('/:id', auth, async (req, res) => {
   try {
     const item = await Item.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
     if (!item) return res.status(404).json({ message: 'Item not found' });
