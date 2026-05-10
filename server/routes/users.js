@@ -60,8 +60,8 @@ router.post('/', auth, adminOnly, async (req, res) => {
     user.history.unshift({ action: 'created', details: `New user created by ${req.user.name} with temporary password` });
     await user.save();
     
-    // Send Welcome Email (Non-blocking)
-    sendWelcomeEmail(email, name, password);
+    // Send Welcome Email
+    await sendWelcomeEmail(email, name, password);
 
     const { password: _, ...userData } = user.toObject();
     res.status(201).json(userData);
