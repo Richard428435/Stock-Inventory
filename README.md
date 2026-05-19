@@ -115,3 +115,4 @@ If you accidentally lock yourself out of a bad URL configuration inside the sett
 
 *Built with ♥️ for Modern Asset Tracking.*
 # CffaInventory
+# Church-Inventory-and-Membership-Management
