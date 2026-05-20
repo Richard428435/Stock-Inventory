@@ -13,7 +13,7 @@ const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001'];
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (like mobile apps or curl) or allowed origins or any vercel.app
-    if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app') || origin.includes('amazonaws.com')) {
+    if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app') || origin.includes('amazonaws.com') || origin.includes('elasticbeanstalk.com')) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
