@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const path = require('path');
 
 dotenv.config();
 
@@ -40,6 +41,11 @@ app.get('/api/health', (req, res) => {
     database: dbStatus,
     message: 'Sacred Steward API running' 
   });
+});
+
+// Catch-all route to serve the React App index.html
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Connect to MongoDB
