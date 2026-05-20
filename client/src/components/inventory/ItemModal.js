@@ -40,7 +40,7 @@ export default function ItemModal({ item, onClose, onSave, categories }) {
 
   return (
     <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="glass-liquid p-8 max-w-2xl w-full mx-4 rounded-3xl border border-slate-300 dark:border-white/20 shadow-2xl max-h-[90vh] overflow-y-auto inventory-scrollbar">
+      <div className="bg-[#0a0a0a]/95 backdrop-blur-3xl p-8 max-w-2xl w-full mx-4 rounded-3xl border border-white/10 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)] max-h-[90vh] overflow-y-auto inventory-scrollbar">
         <div className="flex items-center justify-between mb-8">
           <h3 className="text-2xl font-bold text-slate-800 dark:text-white">{item ? 'Edit Item' : 'Add New Item'}</h3>
           <button onClick={onClose} className="w-10 h-10 flex items-center justify-center rounded-full bg-white/60 dark:bg-white/5 hover:bg-transparent text-slate-500 dark:text-gray-400 hover:text-red-400 transition-all">✕</button>
@@ -72,7 +72,13 @@ export default function ItemModal({ item, onClose, onSave, categories }) {
             </div>
             <div>
               <label className="label !text-slate-800 dark:!text-white">Location / Room</label>
-              <input className="input !bg-white/60 dark:!bg-white/5 !border-slate-200 dark:!border-white/10 !text-slate-800 dark:!text-white h-12 rounded-xl" value={form.location} onChange={e => set('location', e.target.value)} />
+              <select className="input !bg-white/60 dark:!bg-white/5 !border-slate-200 dark:!border-white/10 !text-slate-800 dark:!text-white h-12 rounded-xl" value={form.location} onChange={e => set('location', e.target.value)}>
+                <option value="" className="bg-[#1a0840] text-white">Select Location...</option>
+                <option value="CFFA Media Cabin" className="bg-[#1a0840] text-white">CFFA Media Cabin</option>
+                <option value="Stage" className="bg-[#1a0840] text-white">Stage</option>
+                <option value="Underground" className="bg-[#1a0840] text-white">Underground</option>
+                <option value="Kids Koinonia" className="bg-[#1a0840] text-white">Kids Koinonia</option>
+              </select>
             </div>
             <div>
               <label className="label !text-slate-800 dark:!text-white">Quantity</label>
@@ -190,10 +196,10 @@ export default function ItemModal({ item, onClose, onSave, categories }) {
           </div>
 
           <div className="flex gap-4 pt-4">
-            <button type="submit" disabled={saving} className="flex-1 py-4 rounded-2xl glass-liquid text-slate-800 dark:text-white font-bold uppercase tracking-widest active:scale-95 transition-all text-sm">
+            <button type="submit" disabled={saving} className="flex-1 py-4 rounded-2xl bg-gradient-to-r from-[#d1a66a] to-[#b78645] text-[#111] shadow-[0_0_20px_rgba(196,154,91,0.3)] hover:shadow-[0_0_30px_rgba(196,154,91,0.5)] font-bold uppercase tracking-widest active:scale-95 transition-all text-sm">
               {saving ? 'Processing...' : (item ? 'Update Item' : 'Create Item')}
             </button>
-            <button type="button" onClick={onClose} className="px-8 py-4 rounded-2xl bg-white/60 dark:bg-white/5 hover:bg-white hover:text-slate-900 text-slate-600 dark:text-gray-300 font-bold uppercase tracking-widest transition-all text-sm">Cancel</button>
+            <button type="button" onClick={onClose} className="px-8 py-4 rounded-2xl bg-white/5 hover:bg-white/10 text-white font-bold uppercase tracking-widest transition-all text-sm border border-white/10">Cancel</button>
           </div>
         </form>
       </div>

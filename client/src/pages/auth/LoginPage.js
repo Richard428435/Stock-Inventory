@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useSystem } from '../../context/SystemContext';
 import toast from 'react-hot-toast';
+import { Shield, Users, BookOpen, Heart } from 'lucide-react';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -116,87 +117,164 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className="min-h-screen relative overflow-hidden bg-black">
+      
+      {/* Dedicated Login Background Image */}
+      <div 
+        className="absolute inset-0 z-0 pointer-events-none"
+        style={{
+          backgroundImage: 'url("/pictures/luxury_login_bg.png")',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center bottom',
+          backgroundRepeat: 'no-repeat'
+        }}
+      ></div>
+      {/* Optional dark gradient overlay to ensure text contrast over mountains */}
+      <div className="absolute inset-0 z-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none"></div>
+
       <div className="relative z-10 min-h-screen flex items-center justify-center px-6">
 
-        {/* Bible verses - left bottom - rotating */}
-        <div className="absolute bottom-24 left-8 text-sm md:text-base lg:text-lg xl:text-xl text-white/90 max-w-[40%] lg:max-w-[50%] verse-font fade-in drop-shadow-lg hidden md:block">
-          {versesList[verseIndex]}
+        {/* Giant Watermark Logo */}
+        <div className="absolute left-[10%] top-1/2 -translate-y-1/2 opacity-[0.03] pointer-events-none hidden lg:block">
+          <img src={config?.logoUrl || "/pictures/Logoo_02-removebg-preview.png"} alt="Watermark" className="w-[600px] h-[600px] object-contain" />
         </div>
 
-        {/* Copyright - center bottom */}
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-xs text-white/50 text-center font-serif">
-          <div>© {new Date().getFullYear()} {config?.churchName || 'Chariot of Fire Faith Assembly'}</div>
+        {/* Left Side Content Container */}
+        <div className="absolute top-0 left-0 w-full lg:w-1/2 h-full flex flex-col justify-between p-12 md:p-20 lg:p-28 pointer-events-none z-10">
+          
+          {/* Bible verses - Elegant Epigraph */}
+          <div 
+            key={verseIndex}
+            className="max-w-[90%] lg:max-w-[85%] hidden md:flex flex-col gap-5 animate-slide-right opacity-0"
+            style={{ animationFillMode: 'forwards', animationDelay: '300ms' }}
+          >
+            <div>
+              <p className="text-[#eaddcf]/90 font-serif text-lg md:text-xl lg:text-[22px] italic leading-loose tracking-wide drop-shadow-md mb-6 font-light">
+                "{versesList[verseIndex].split('"')[1]}"
+              </p>
+              <div className="flex items-center gap-4">
+                <div className="w-6 h-[1px] bg-[#c49a5b]"></div>
+                <p className="text-[#c49a5b] font-bold uppercase tracking-[0.4em] text-[10px] md:text-[11px]">
+                  {versesList[verseIndex].split('"')[2]?.trim() || ''}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Features / Core Values */}
+          <div className="hidden lg:grid grid-cols-4 gap-6 max-w-[90%] animate-slide-up opacity-0 mb-8" style={{ animationFillMode: 'forwards', animationDelay: '600ms' }}>
+            <div className="flex flex-col items-center text-center gap-4">
+              <Shield className="w-7 h-7 text-[#c49a5b]" strokeWidth={1} />
+              <h4 className="text-[#eaddcf] font-bold uppercase tracking-[0.2em] text-[8px]">Faithful Stewardship</h4>
+              <p className="text-white/40 text-[9px] leading-relaxed">Managing resources<br/>with integrity.</p>
+            </div>
+            <div className="flex flex-col items-center text-center gap-4">
+              <Users className="w-7 h-7 text-[#c49a5b]" strokeWidth={1} />
+              <h4 className="text-[#eaddcf] font-bold uppercase tracking-[0.2em] text-[8px]">Spiritual Unity</h4>
+              <p className="text-white/40 text-[9px] leading-relaxed">Working together<br/>in purpose.</p>
+            </div>
+            <div className="flex flex-col items-center text-center gap-4">
+              <BookOpen className="w-7 h-7 text-[#c49a5b]" strokeWidth={1} />
+              <h4 className="text-[#eaddcf] font-bold uppercase tracking-[0.2em] text-[8px]">Divine Purpose</h4>
+              <p className="text-white/40 text-[9px] leading-relaxed">Every action for<br/>His glory.</p>
+            </div>
+            <div className="flex flex-col items-center text-center gap-4">
+              <Heart className="w-7 h-7 text-[#c49a5b]" strokeWidth={1} />
+              <h4 className="text-[#eaddcf] font-bold uppercase tracking-[0.2em] text-[8px]">Eternal Impact</h4>
+              <p className="text-white/40 text-[9px] leading-relaxed">Building His kingdom<br/>that lasts.</p>
+            </div>
+          </div>
         </div>
 
         {/* Right-aligned Single Container */}
-        <div className="w-full flex justify-center lg:justify-end md:pr-10 lg:pr-24 xl:pr-36 items-center min-h-screen py-12 px-2 z-10 relative overflow-y-auto">
-          <div className="glass-liquid bg-white/60 dark:bg-white/5 backdrop-blur-3xl border border-slate-300 dark:border-white/20 rounded-3xl shadow-2xl w-full max-w-[400px] md:max-w-none md:w-[440px] lg:w-[480px] p-6 sm:p-8 md:p-10 text-center flex flex-col justify-center my-auto">
+        <div className="w-full flex justify-center lg:justify-end lg:pr-[8%] xl:pr-[12%] items-center min-h-screen py-12 px-4 z-20 relative overflow-y-auto">
+          {/* Right Card with custom border highlight */}
+          <div className="relative w-full max-w-[420px] md:max-w-[440px] animate-slide-up group">
             
-            {view === 'login' && (
-              <div className="fade-in space-y-6">
-                <img
-                  src={config?.logoUrl || "/pictures/Logoo_02-removebg-preview.png"}
-                  alt="Organization Logo"
-                  className="w-[120px] h-[120px] sm:w-[150px] sm:h-[150px] md:w-[180px] md:h-[180px] object-cover rounded-2xl mx-auto mb-4 drop-shadow-2xl brightness-110"
-                />
-                <div className="space-y-1">
-                  <h2 className="text-slate-800 dark:text-white text-3xl font-bold">{getGreeting()}</h2>
-                  <p className="text-slate-700 dark:text-white/80 font-medium">Welcome Back!</p>
-                </div>
+            {/* The elegant top-right edge highlight */}
+            <div className="absolute -inset-[1px] bg-gradient-to-tr from-transparent via-white/5 to-[#eaddcf]/80 rounded-[2.5rem] opacity-100 pointer-events-none" style={{ maskImage: 'linear-gradient(225deg, black 0%, transparent 40%)', WebkitMaskImage: 'linear-gradient(225deg, black 0%, transparent 40%)' }}></div>
+            <div className="absolute -inset-[1px] border border-white/5 rounded-[2.5rem] pointer-events-none"></div>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="glass-liquid bg-white dark:bg-white/20 backdrop-blur rounded-2xl px-4 py-3 flex items-center gap-3">
-                    <span className="text-xl">✉️</span>
-                    <input
-                      type="email"
-                      placeholder="Email"
-                      className="w-full bg-transparent text-slate-800 dark:text-gray-100 placeholder-slate-500 dark:placeholder-gray-400 outline-none border-none"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
+            <div className="bg-[#0a0a0a]/80 backdrop-blur-lg rounded-[2.5rem] shadow-[0_30px_80px_-15px_rgba(0,0,0,1)] w-full p-10 sm:p-12 text-center flex flex-col justify-center my-auto relative overflow-hidden">
+              
+              {/* Subtle inner noise/texture (Optimized) */}
+              <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'1\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")' }}></div>
+              
+              {view === 'login' && (
+                <div className="relative z-10 space-y-10">
+                  <div className="flex justify-center items-center h-[120px] mb-6">
+                    <img
+                      src={config?.logoUrl || "/pictures/Logoo_02-removebg-preview.png"}
+                      alt="Organization Logo"
+                      className="w-[120px] h-[120px] object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)] animate-float-lux delay-100"
                     />
                   </div>
+                  <div className="space-y-4 animate-slide-right delay-200">
+                    <h2 className="text-[40px] leading-none font-serif tracking-tight">
+                      <span className="text-white font-normal">Good </span>
+                      <span className="text-[#c49a5b] font-normal italic">Evening</span>
+                    </h2>
+                    <p className="text-white/40 font-semibold uppercase tracking-[0.4em] text-[8px] mt-2">Welcome Back To The Dashboard</p>
+                  </div>
 
-                  <div className="glass-liquid bg-white dark:bg-white/20 backdrop-blur rounded-2xl px-4 py-3 flex items-center gap-3 group relative">
-                    <span className="text-xl">🔒</span>
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Password"
-                      className="w-full bg-transparent text-slate-800 dark:text-gray-100 placeholder-slate-500 dark:placeholder-gray-400 outline-none border-none"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                    />
-                    <button 
-                      type="button" 
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="opacity-40 hover:opacity-100 transition-opacity outline-none pr-1"
-                    >
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="bg-[#161616]/80 border border-[#333333] rounded-2xl px-5 py-4 flex items-center gap-4 focus-within:border-[#c49a5b]/60 transition-all duration-300 animate-slide-up delay-300 group">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white/30 group-focus-within:text-[#c49a5b] transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                      <input
+                        type="email"
+                        placeholder="Email Address"
+                        className="w-full bg-transparent text-white/90 placeholder-white/20 outline-none border-none font-medium text-[13px]"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    <div className="bg-[#161616]/80 border border-[#333333] rounded-2xl px-5 py-4 flex items-center gap-4 focus-within:border-[#c49a5b]/60 transition-all duration-300 animate-slide-up delay-400 group">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white/30 group-focus-within:text-[#c49a5b] transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Secure Password"
+                        className="w-full bg-transparent text-white/90 placeholder-white/20 outline-none border-none font-medium text-[13px]"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                      />
+                      <button 
+                        type="button" 
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="opacity-30 hover:opacity-100 text-white transition-opacity outline-none pr-1"
+                      >
                       {showPassword ? (
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
                       ) : (
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                       )}
                     </button>
                   </div>
 
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="glass-liquid bg-white dark:bg-white/10 hover:bg-slate-50 dark:hover:bg-white/20 backdrop-blur-xl border border-slate-300 dark:border-white/30 rounded-2xl font-bold text-xl text-slate-800 dark:text-white/90 shadow-2xl transition-all duration-300 px-8 py-4 w-full mt-2"
-                  >
-                    {loading ? 'Signing in...' : 'Login'}
-                  </button>
-                </form>
-              </div>
-            )}
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="bg-gradient-to-b from-[#d1a66a] to-[#b78645] hover:from-[#e8bd7f] hover:to-[#c49652] rounded-2xl font-bold uppercase tracking-[0.2em] text-[10px] text-[#1a1a1a] shadow-[0_4px_15px_rgba(0,0,0,0.5)] transition-all duration-300 px-8 py-[18px] w-full mt-6 animate-scale-in delay-500"
+                    >
+                      {loading ? 'Authenticating...' : 'Sign In To Dashboard'}
+                    </button>
+
+                    <div className="pt-8 animate-slide-up delay-700 flex items-center justify-center gap-3 opacity-60">
+                      <div className="h-[1px] w-12 bg-white/20"></div>
+                      <span className="text-white/40 text-[7px] font-bold uppercase tracking-[0.3em]">Serving His Kingdom Together</span>
+                      <div className="h-[1px] w-12 bg-white/20"></div>
+                    </div>
+                  </form>
+                </div>
+              )}
 
             {view === 'force-password-change' && (
               <div className="fade-in space-y-6">
-                <div className="w-16 h-16 mx-auto bg-amber-500/10 text-amber-500 dark:text-amber-400 rounded-full flex items-center justify-center text-3xl mb-2 border border-amber-500/20 shadow-[0_0_20px_rgba(245,158,11,0.15)] relative">
+                <div className="w-16 h-16 mx-auto bg-amber-500/10 text-amber-500 dark:text-amber-400 rounded-full flex items-center justify-center mb-2 border border-amber-500/20 shadow-[0_0_20px_rgba(245,158,11,0.15)] relative">
                   <span className="absolute inset-0 bg-amber-500/20 rounded-full animate-ping opacity-50"></span>
-                  🔒
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
                 </div>
                 <div className="space-y-2">
                   <h2 className="text-slate-800 dark:text-white text-2xl font-bold">Mandatory Update</h2>
@@ -207,7 +285,7 @@ export default function LoginPage() {
                 
                 <form onSubmit={handleForcePasswordChange} className="space-y-4 pt-2">
                   <div className="glass-liquid bg-white dark:bg-white/20 backdrop-blur rounded-2xl px-4 py-3 flex items-center gap-3">
-                    <span className="text-xl">🔑</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-slate-500 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" /></svg>
                     <input
                       type={showPassword ? "text" : "password"}
                       placeholder="New Permanent Password"
@@ -218,7 +296,7 @@ export default function LoginPage() {
                     />
                   </div>
                   <div className="glass-liquid bg-white dark:bg-white/20 backdrop-blur rounded-2xl px-4 py-3 flex items-center gap-3">
-                    <span className="text-xl">✅</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" /></svg>
                     <input
                       type={showPassword ? "text" : "password"}
                       placeholder="Confirm New Password"
@@ -248,8 +326,8 @@ export default function LoginPage() {
 
           </div>
         </div>
-
       </div>
+    </div>
     </div>
   );
 }

@@ -8,11 +8,11 @@ import MaintenanceModal from '../../components/inventory/MaintenanceModal';
 
 function MaintenanceCard({ log, onEdit, onDelete }) {
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
-  
-  const statusColors = { 
-    Pending: 'bg-white/80 dark:bg-white/10 text-slate-800 dark:text-white border-slate-300 dark:border-white/20', 
-    'In Progress': 'bg-white text-slate-900', 
-    Completed: 'bg-white/60 dark:bg-white/5 text-slate-500 dark:text-white/40 border-white/5' 
+
+  const statusColors = {
+    Pending: 'bg-white/80 dark:bg-white/10 text-slate-800 dark:text-white border-slate-300 dark:border-white/20',
+    'In Progress': 'bg-white text-slate-900',
+    Completed: 'bg-white/60 dark:bg-white/5 text-slate-500 dark:text-white/40 border-white/5'
   };
 
   const typeIcons = {
@@ -38,7 +38,7 @@ function MaintenanceCard({ log, onEdit, onDelete }) {
         <p className="text-white/60 text-sm line-clamp-2 italic leading-relaxed">
           "{log.description || 'No detailed problem description provided for this ticket.'}"
         </p>
-        
+
         <div className="grid grid-cols-2 gap-4 pt-2">
           <div className="space-y-1">
             <span className="block text-[9px] font-bold text-white/20 uppercase tracking-widest">Technician</span>
@@ -123,73 +123,75 @@ export default function MaintenancePage() {
   };
 
   return (
-    <div className="space-y-10 pb-20 fade-in max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      {/* Header & Controls */}
-      <section className="space-y-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-1">
-            <h2 className="text-4xl font-black text-slate-800 dark:text-white tracking-tight">Maintenance</h2>
-            <p className="text-slate-500 dark:text-gray-400 text-sm font-medium tracking-wide">Orchestrating asset longevity and operational integrity.</p>
-          </div>
-          <button onClick={() => setShowAdd(true)} className="flex items-center gap-2 px-8 py-4 rounded-2xl glass-liquid text-slate-800 dark:text-white font-black uppercase tracking-[0.2em] hover:bg-white hover:text-slate-900 active:scale-95 transition-all text-xs group shadow-2xl">
-            <span className="text-xl group-hover:rotate-12 transition-transform">➕</span> New Ticket
-          </button>
-        </div>
-
-        <div className="flex flex-wrap gap-3">
-          {['', 'Pending', 'In Progress', 'Completed'].map(s => (
-            <button 
-              key={s} 
-              onClick={() => setStatusFilter(s)}
-              className={`px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border ${statusFilter === s ? 'bg-white text-slate-900 border-white' : 'bg-white/60 dark:bg-white/5 text-slate-500 dark:text-white/40 border-slate-200 dark:border-white/10 hover:border-slate-400 dark:border-white/30'}`}
-            >
-              {s || 'All Activity'}
+    <>
+      <div className="space-y-10 pb-20 fade-in max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header & Controls */}
+        <section className="space-y-8">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="space-y-1">
+              <h2 className="text-4xl font-black text-slate-800 dark:text-white tracking-tight">Maintenance</h2>
+              <p className="text-slate-500 dark:text-gray-400 text-sm font-medium tracking-wide">Orchestrating asset longevity and operational integrity.</p>
+            </div>
+            <button onClick={() => setShowAdd(true)} className="flex items-center gap-2 px-8 py-4 rounded-2xl glass-liquid text-slate-800 dark:text-white font-black uppercase tracking-[0.2em] hover:bg-white hover:text-slate-900 active:scale-95 transition-all text-xs group shadow-2xl">
+              <span className="text-xl group-hover:rotate-12 transition-transform">➕</span> New Ticket
             </button>
-          ))}
-        </div>
-      </section>
+          </div>
 
-      {/* Main Registry Grid */}
-      <section>
-        {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map(n => <div key={n} className="glass-card h-80 animate-pulse bg-white/60 dark:bg-white/5 rounded-[2rem]" />)}
-          </div>
-        ) : logs.length === 0 ? (
-          <div className="glass-card p-20 flex flex-col items-center justify-center text-center rounded-[3rem] border-dashed border-white/5">
-             <div className="w-20 h-20 rounded-full bg-white/60 dark:bg-white/5 flex items-center justify-center text-4xl mb-4 opacity-50 shadow-inner">📔</div>
-             <h3 className="text-xl font-black text-slate-800 dark:text-white uppercase tracking-widest">Register Empty</h3>
-             <p className="text-gray-500 mt-2 max-w-xs mx-auto text-sm leading-relaxed tracking-tight">All assets are currently operational or no tickets have been filed in this category.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fadeIn">
-            {logs.map(log => (
-              <MaintenanceCard 
-                key={log._id} 
-                log={log} 
-                onEdit={setEditLog} 
-                onDelete={handleDelete} 
-              />
+          <div className="flex flex-wrap gap-3">
+            {['', 'Pending', 'In Progress', 'Completed'].map(s => (
+              <button
+                key={s}
+                onClick={() => setStatusFilter(s)}
+                className={`px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border ${statusFilter === s ? 'bg-white text-slate-900 border-white' : 'bg-white/60 dark:bg-white/5 text-slate-500 dark:text-white/40 border-slate-200 dark:border-white/10 hover:border-slate-400 dark:border-white/30'}`}
+              >
+                {s || 'All Activity'}
+              </button>
             ))}
           </div>
-        )}
-      </section>
+        </section>
+
+        {/* Main Registry Grid */}
+        <section>
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3].map(n => <div key={n} className="glass-card h-80 animate-pulse bg-white/60 dark:bg-white/5 rounded-[2rem]" />)}
+            </div>
+          ) : logs.length === 0 ? (
+            <div className="glass-card p-20 flex flex-col items-center justify-center text-center rounded-[3rem] border-dashed border-white/5">
+              <div className="w-20 h-20 rounded-full bg-white/60 dark:bg-white/5 flex items-center justify-center text-4xl mb-4 opacity-50 shadow-inner">📔</div>
+              <h3 className="text-xl font-black text-slate-800 dark:text-white uppercase tracking-widest">Register Empty</h3>
+              <p className="text-gray-500 mt-2 max-w-xs mx-auto text-sm leading-relaxed tracking-tight">All assets are currently operational or no tickets have been filed in this category.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fadeIn">
+              {logs.map(log => (
+                <MaintenanceCard
+                  key={log._id}
+                  log={log}
+                  onEdit={setEditLog}
+                  onDelete={handleDelete}
+                />
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* Background Aesthetic */}
+        <div className="fixed bottom-10 right-10 opacity-[0.03] select-none pointer-events-none font-black text-[12rem] text-slate-800 dark:text-white tracking-tighter -rotate-90 origin-bottom-right">
+          SERVICE
+        </div>
+      </div>
 
       {/* Modals */}
       {(showAdd || editLog) && (
-        <MaintenanceModal 
-          log={editLog} 
-          items={items} 
-          onClose={() => { setShowAdd(false); setEditLog(null); }} 
-          onSave={load} 
+        <MaintenanceModal
+          log={editLog}
+          items={items}
+          onClose={() => { setShowAdd(false); setEditLog(null); }}
+          onSave={load}
         />
       )}
-
-      {/* Background Aesthetic */}
-      <div className="fixed bottom-10 right-10 opacity-[0.03] select-none pointer-events-none font-black text-[12rem] text-slate-800 dark:text-white tracking-tighter -rotate-90 origin-bottom-right">
-        SERVICE
-      </div>
-    </div>
+    </>
   );
 }
 

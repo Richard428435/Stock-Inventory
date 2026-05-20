@@ -40,7 +40,7 @@ export default function MaintenanceModal({ log, items, onClose, onSave }) {
 
   return (
     <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="glass-liquid p-8 max-w-2xl w-full mx-4 rounded-[2.5rem] border border-slate-300 dark:border-white/20 shadow-2xl max-h-[90vh] overflow-y-auto inventory-scrollbar">
+      <div className="bg-[#0a0a0a]/95 backdrop-blur-3xl p-8 max-w-2xl w-full mx-4 rounded-3xl border border-white/10 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)] max-h-[90vh] overflow-y-auto inventory-scrollbar">
         <div className="flex items-center justify-between mb-8">
           <h3 className="text-2xl font-black text-slate-800 dark:text-white">{log ? 'Update Ticket' : 'Initiate Maintenance'}</h3>
           <button onClick={onClose} className="w-10 h-10 flex items-center justify-center rounded-full bg-white/60 dark:bg-white/5 hover:bg-transparent text-slate-500 dark:text-gray-400 hover:text-red-400 transition-all text-xl">✕</button>

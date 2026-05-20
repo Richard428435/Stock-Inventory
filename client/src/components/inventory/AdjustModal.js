@@ -22,7 +22,7 @@ export default function AdjustModal({ item, onClose, onDone }) {
 
   return (
     <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="glass-liquid p-8 max-w-md w-full mx-4 rounded-3xl border border-slate-300 dark:border-white/20 shadow-2xl">
+      <div className="bg-[#0a0a0a]/95 backdrop-blur-3xl p-8 max-w-md w-full mx-4 rounded-3xl border border-white/10 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)]">
         <h3 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">Adjust Stock</h3>
         <p className="text-slate-500 dark:text-gray-400 text-sm mb-6 flex items-center justify-between">
           <span>{item.name}</span>

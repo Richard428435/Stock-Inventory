@@ -30,7 +30,15 @@ export default function ItemDetailsPage() {
   const loadCategories = async () => {
     try {
       const res = await api.get('/inventory/categories');
-      setCategories(res.data);
+      const fixedCategories = [
+        { _id: 'fixed-1', name: 'CFFA M&B - Audio' },
+        { _id: 'fixed-2', name: 'CFFA M&B - Live Production' },
+        { _id: 'fixed-3', name: 'CFFA M&B - Videography' },
+        { _id: 'fixed-4', name: 'CFFA M&B - Presentation' }
+      ];
+      const existingNames = new Set(res.data.map(c => c.name));
+      const newCategories = fixedCategories.filter(c => !existingNames.has(c.name));
+      setCategories([...res.data, ...newCategories]);
     } catch (err) {}
   };
 
@@ -55,17 +63,18 @@ export default function ItemDetailsPage() {
   const isLowStock = item.quantity <= item.lowStockThreshold;
 
   return (
-    <div className="space-y-8 pb-20 fade-in max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <>
+      <div className="space-y-8 pb-20 fade-in max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Header & Breadcrumbs */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="space-y-1">
           <button 
             onClick={() => navigate('/inventory/items')} 
-            className="flex items-center gap-2 text-slate-600 dark:text-white/70 hover:text-slate-800 dark:text-white transition-colors text-[10px] font-bold uppercase tracking-[0.2em] mb-2 group"
+            className="flex items-center gap-2 text-slate-600 dark:text-white/70 hover:text-slate-800 dark:text-white transition-colors text-[10px] font-bold uppercase tracking-[0.2em] mb-2 group animate-slide-right"
           >
             <span className="group-hover:-translate-x-1 transition-transform">←</span> Back to Catalog
           </button>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 animate-slide-right delay-100">
             <h2 className="text-4xl font-black text-slate-800 dark:text-white tracking-tight">{item.name}</h2>
             {isLowStock && (
               <span className="px-3 py-1 rounded-full bg-red-500 text-slate-800 dark:text-white text-[10px] font-bold uppercase tracking-widest shadow-lg animate-pulse">Low Stock</span>
@@ -74,15 +83,15 @@ export default function ItemDetailsPage() {
         </div>
 
         {/* Action Bar */}
-        <div className="flex items-center gap-3">
-          <button onClick={() => setShowEdit(true)} className="px-6 py-3 rounded-2xl bg-white/60 dark:bg-white/5 text-slate-800 dark:text-white font-bold uppercase tracking-widest hover:bg-white hover:text-slate-900 active:scale-95 transition-all text-xs border border-slate-200 dark:border-white/10 shadow-lg">
+        <div className="flex items-center gap-3 animate-slide-right delay-200">
+          <button onClick={() => setShowEdit(true)} className="px-6 py-3 rounded-2xl bg-white/60 dark:bg-white/5 text-slate-800 dark:text-white font-bold uppercase tracking-widest hover:bg-white hover:text-slate-900 active:scale-95 transition-all text-xs border border-slate-200 dark:border-white/10 shadow-lg hover-lux">
             Edit Details
           </button>
-          <button onClick={() => setShowBarcodePrint(true)} className="px-6 py-3 rounded-2xl bg-white/60 dark:bg-white/5 text-slate-800 dark:text-white font-bold uppercase tracking-widest hover:bg-white hover:text-slate-900 active:scale-95 transition-all text-xs border border-slate-200 dark:border-white/10 shadow-lg">
+          <button onClick={() => setShowBarcodePrint(true)} className="px-6 py-3 rounded-2xl bg-white/60 dark:bg-white/5 text-slate-800 dark:text-white font-bold uppercase tracking-widest hover:bg-white hover:text-slate-900 active:scale-95 transition-all text-xs border border-slate-200 dark:border-white/10 shadow-lg hover-lux">
             Print Barcode
           </button>
           {!showDeleteConfirm ? (
-            <button onClick={() => setShowDeleteConfirm(true)} className="px-6 py-3 rounded-2xl bg-red-500/10 text-red-400 font-bold uppercase tracking-widest hover:bg-red-500 hover:text-slate-800 dark:text-white active:scale-95 transition-all text-xs border border-red-500/20 shadow-lg">
+            <button onClick={() => setShowDeleteConfirm(true)} className="px-6 py-3 rounded-2xl bg-red-500/10 text-red-400 font-bold uppercase tracking-widest hover:bg-red-500 hover:text-slate-800 dark:text-white active:scale-95 transition-all text-xs border border-red-500/20 shadow-lg hover-lux">
               Delete
             </button>
           ) : (
@@ -101,7 +110,7 @@ export default function ItemDetailsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
         {/* Left: Media & Visuals (6 columns) */}
         <div className="lg:col-span-12 xl:col-span-6 flex flex-col gap-8 h-full">
-          <div className="glass-liquid rounded-[2.5rem] border border-slate-200 dark:border-white/10 overflow-hidden shadow-2xl group p-6">
+          <div className="glass-liquid rounded-[2.5rem] border border-slate-200 dark:border-white/10 overflow-hidden shadow-2xl group p-6 animate-slide-up delay-100 hover-lux">
             <div className="relative aspect-square w-full rounded-[2rem] bg-[#0c0818] overflow-hidden border border-white/5 flex items-center justify-center p-4">
               {item.imageUrl ? (
                 <img src={item.imageUrl} alt={item.name} className="max-w-full max-h-full object-contain transition-transform duration-700 group-hover:scale-105" />
@@ -114,7 +123,7 @@ export default function ItemDetailsPage() {
           </div>
 
           {/* Identification Section */}
-          <div className="glass-liquid rounded-[2.5rem] p-8 border border-slate-200 dark:border-white/10 space-y-6">
+          <div className="glass-liquid rounded-[2.5rem] p-8 border border-slate-200 dark:border-white/10 space-y-6 animate-slide-up delay-200 hover-lux">
             <h3 className="text-slate-600 dark:text-white/60 text-[10px] font-bold uppercase tracking-[0.3em] m-0">Identification</h3>
             <div className="grid grid-cols-2 gap-6 mt-2">
               <div className="space-y-1">
@@ -140,7 +149,7 @@ export default function ItemDetailsPage() {
         {/* Right: Technical & History (6 columns) */}
         <div className="lg:col-span-12 xl:col-span-6 flex flex-col gap-8 h-full">
           {/* Inventory Overview */}
-          <div className="glass-liquid rounded-[2.5rem] p-10 border border-slate-200 dark:border-white/10 relative overflow-hidden">
+          <div className="glass-liquid rounded-[2.5rem] p-10 border border-slate-200 dark:border-white/10 relative overflow-hidden animate-slide-up delay-100 hover-lux">
              <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
                <div className="flex flex-col">
                  <span className="text-slate-600 dark:text-white/60 text-[10px] font-bold uppercase tracking-[0.3em] mb-4">Stock Overview</span>
@@ -164,14 +173,14 @@ export default function ItemDetailsPage() {
 
           {/* Details & Procurement */}
           <div className="flex flex-col gap-8">
-            <div className="glass-liquid rounded-[2.5rem] p-8 border border-slate-200 dark:border-white/10 flex flex-col gap-6">
+            <div className="glass-liquid rounded-[2.5rem] p-8 border border-slate-200 dark:border-white/10 flex flex-col gap-6 animate-slide-up delay-200 hover-lux">
               <h3 className="text-slate-600 dark:text-white/60 text-[10px] font-bold uppercase tracking-[0.3em]">Description</h3>
               <p className="text-slate-700 dark:text-white/90 leading-relaxed text-sm">
                 {item.description || "No technical description provided for this asset. Update details to provide more context for warehouse staff."}
               </p>
             </div>
 
-            <div className="glass-liquid rounded-[2.5rem] p-8 border border-slate-200 dark:border-white/10 flex flex-col gap-6">
+            <div className="glass-liquid rounded-[2.5rem] p-8 border border-slate-200 dark:border-white/10 flex flex-col gap-6 animate-slide-up delay-300 hover-lux">
               <h3 className="text-slate-600 dark:text-white/60 text-[10px] font-bold uppercase tracking-[0.3em]">Procurement</h3>
               <div className="flex justify-between items-start gap-4">
                 <div className="space-y-4">
@@ -217,7 +226,7 @@ export default function ItemDetailsPage() {
           </div>
 
           {/* Warranty & Maintenance */}
-          <div className="glass-liquid rounded-[2.5rem] p-8 border border-slate-200 dark:border-white/10 flex-1 flex flex-col justify-center gap-6">
+          <div className="glass-liquid rounded-[2.5rem] p-8 border border-slate-200 dark:border-white/10 flex-1 flex flex-col justify-center gap-6 animate-slide-up delay-400 hover-lux">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div className="space-y-2">
                 <h3 className="text-slate-600 dark:text-white/60 text-[10px] font-bold uppercase tracking-[0.3em] m-0">Warranty Status</h3>
@@ -262,7 +271,68 @@ export default function ItemDetailsPage() {
         </div>
       </div>
 
-      {/* Modals */}
+      {/* Interactive Asset Lifecycle Timeline (Feature 7) */}
+      <div className="glass-liquid rounded-[2.5rem] p-10 border border-slate-200 dark:border-white/10 relative overflow-hidden animate-slide-up delay-500 hover-lux mt-8">
+        <h3 className="text-slate-600 dark:text-white/60 text-[10px] font-bold uppercase tracking-[0.3em] mb-10 text-center">Asset Lifecycle & AI Diagnostics</h3>
+        
+        <div className="relative flex flex-col md:flex-row justify-between items-center max-w-4xl mx-auto z-10">
+          {/* Connector Line */}
+          <div className="absolute top-1/2 left-0 w-full h-1 bg-white/5 -translate-y-1/2 hidden md:block rounded-full overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-emerald-500 via-[#c49a5b] to-transparent w-[75%] animate-pulse"></div>
+          </div>
+
+          {/* Node 1: Procurement */}
+          <div className="relative flex flex-col items-center gap-4 group w-full md:w-auto mb-8 md:mb-0">
+            <div className="w-12 h-12 rounded-full bg-[#111] border-2 border-emerald-500/50 flex items-center justify-center text-emerald-400 z-10 shadow-[0_0_20px_rgba(16,185,129,0.2)] group-hover:scale-110 group-hover:border-emerald-400 transition-all">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+            </div>
+            <div className="text-center bg-black/40 backdrop-blur-md px-4 py-2 rounded-xl border border-white/5">
+              <span className="block text-white font-bold text-sm">Procured</span>
+              <span className="block text-[9px] text-white/50 uppercase tracking-widest">{item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'Legacy Asset'}</span>
+            </div>
+          </div>
+
+          {/* Node 2: Last Audit */}
+          <div className="relative flex flex-col items-center gap-4 group w-full md:w-auto mb-8 md:mb-0">
+            <div className="w-12 h-12 rounded-full bg-[#111] border-2 border-[#c49a5b]/50 flex items-center justify-center text-[#c49a5b] z-10 shadow-[0_0_20px_rgba(196,154,91,0.2)] group-hover:scale-110 group-hover:border-[#c49a5b] transition-all">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            </div>
+            <div className="text-center bg-black/40 backdrop-blur-md px-4 py-2 rounded-xl border border-white/5">
+              <span className="block text-white font-bold text-sm">Last Audit</span>
+              <span className="block text-[9px] text-[#c49a5b]/70 uppercase tracking-widest">Verified Present</span>
+            </div>
+          </div>
+
+          {/* Node 3: AI Status */}
+          <div className="relative flex flex-col items-center gap-4 group w-full md:w-auto mb-8 md:mb-0">
+            <div className={`w-12 h-12 rounded-full bg-[#111] border-2 flex items-center justify-center z-10 transition-all group-hover:scale-110 shadow-lg ${isLowStock || item.status === 'Needs Maintenance' ? 'border-amber-500/50 text-amber-400 group-hover:border-amber-400' : 'border-[#c49a5b]/50 text-[#c49a5b] group-hover:border-[#c49a5b]'}`}>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+            </div>
+            <div className="text-center bg-black/40 backdrop-blur-md px-4 py-2 rounded-xl border border-white/5">
+              <span className="block text-white font-bold text-sm">AI Copilot</span>
+              <span className={`block text-[9px] uppercase tracking-widest ${isLowStock || item.status === 'Needs Maintenance' ? 'text-amber-500/70' : 'text-emerald-500/70'}`}>
+                {isLowStock ? 'Restock Predicted' : item.status === 'Needs Maintenance' ? 'Maintenance Flagged' : 'Optimal Health'}
+              </span>
+            </div>
+          </div>
+
+          {/* Node 4: End of Life / Warranty */}
+          <div className="relative flex flex-col items-center gap-4 group w-full md:w-auto">
+            <div className="w-12 h-12 rounded-full bg-[#111] border-2 border-white/10 flex items-center justify-center text-white/30 z-10 transition-all group-hover:scale-110">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            </div>
+            <div className="text-center bg-black/40 backdrop-blur-md px-4 py-2 rounded-xl border border-white/5 opacity-50">
+              <span className="block text-white font-bold text-sm">End of Life</span>
+              <span className="block text-[9px] text-white/50 uppercase tracking-widest">{item.warrantyExpiry ? new Date(item.warrantyExpiry).toLocaleDateString() : 'TBD'}</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      </div>
+
+      {/* Modals - Rendered OUTSIDE transformed container */}
       {showEdit && (
         <ItemModal 
           item={item} 
@@ -278,7 +348,7 @@ export default function ItemDetailsPage() {
           onClose={() => setShowBarcodePrint(false)} 
         />
       )}
-    </div>
+    </>
   );
 }
 
