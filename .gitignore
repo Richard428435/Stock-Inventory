@@ -9,6 +9,7 @@ server/public/uploads/
 *.avi
 *.mkv
 *.webm
+.npm-cache/
 server-deployment.zip
 test_db.js
 server/test_*

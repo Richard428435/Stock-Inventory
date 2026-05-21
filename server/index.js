@@ -2,17 +2,23 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const path = require('path');
 
 dotenv.config();
 
 const app = express();
 
 // Middleware
-const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001'];
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'https://cffamedia.com',
+  'https://www.cffamedia.com'
+];
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (like mobile apps or curl) or allowed origins or any vercel.app
-    if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+    if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app') || origin.includes('amazonaws.com') || origin.includes('elasticbeanstalk.com') || origin.includes('cffamedia.com')) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
@@ -40,6 +46,11 @@ app.get('/api/health', (req, res) => {
     database: dbStatus,
     message: 'Sacred Steward API running' 
   });
+});
+
+// Catch-all route to serve the React App index.html
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Connect to MongoDB
