@@ -40,7 +40,7 @@ export default function SettingsModal({ onClose, initialTab = 'profile' }) {
   const { config, updateConfig } = useSystem();
   
   const [activeTab, setActiveTab] = useState(initialTab === true ? 'profile' : initialTab);
-  const [profileForm, setProfileForm] = useState({ name: user?.name || '', password: '', confirmPassword: '' });
+  const [profileForm, setProfileForm] = useState({ name: user?.name || '', password: '', confirmPassword: '', avatar: user?.avatar || '' });
   const [systemStats, setSystemStats] = useState({ api: 'checking', db: 'checking', smtp: 'checking' });
   const [saving, setSaving] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -95,11 +95,11 @@ export default function SettingsModal({ onClose, initialTab = 'profile' }) {
     }
     setSaving(true);
     try {
-      const payload = { name: profileForm.name };
+      const payload = { name: profileForm.name, avatar: profileForm.avatar };
       if (profileForm.password) payload.password = profileForm.password;
       
       await api.put(`/users/${user._id}`, payload);
-      toast.success('Profile updated');
+      toast.success('Profile updated! (Refresh to see avatar globally)');
       setProfileForm(p => ({ ...p, password: '', confirmPassword: '' }));
     } catch (err) {
       toast.error(err.response?.data?.message || 'Update failed');
@@ -108,7 +108,7 @@ export default function SettingsModal({ onClose, initialTab = 'profile' }) {
     }
   };
 
-  const handleFileUpload = async (file, field) => {
+  const handleFileUpload = async (file, field, isProfile = false) => {
     if (!file) return;
     
     // Check file size (Vercel has a 4.5MB limit for requests)
@@ -128,7 +128,11 @@ export default function SettingsModal({ onClose, initialTab = 'profile' }) {
         });
         
         // res.data.url will be a Google Drive link or the original Base64
-        setDesignerForm(p => ({ ...p, [field]: res.data.url }));
+        if (isProfile) {
+          setProfileForm(p => ({ ...p, [field]: res.data.url }));
+        } else {
+          setDesignerForm(p => ({ ...p, [field]: res.data.url }));
+        }
         toast.success(`${file.name} uploaded successfully!`, { id: toastId });
       } catch (err) {
         toast.error(`Upload failed: ${err.response?.data?.message || err.message}`, { id: toastId });
@@ -186,7 +190,7 @@ export default function SettingsModal({ onClose, initialTab = 'profile' }) {
       const endpoint = reportState.type === 'items' ? '/inventory/items' : '/inventory/stock-logs';
       const response = await api.get(endpoint, { params: { limit: 10000, page: 1 }});
       
-      let data = reportState.type === 'items' ? response.data : response.data.logs;
+      let data = reportState.type === 'items' ? (response.data.items || response.data) : (response.data.logs || response.data);
       
       if (!data || data.length === 0) {
         toast.error('No records found to export');
@@ -324,6 +328,37 @@ export default function SettingsModal({ onClose, initialTab = 'profile' }) {
                 </div>
 
                 <form onSubmit={handleUpdateProfile} className="space-y-4">
+                  <div>
+                    <label className={labelClass}>Profile Picture</label>
+                    <div className="mt-2 flex items-center gap-4 p-3 bg-white/40 dark:bg-white/5 border border-dashed border-slate-300 dark:border-white/20 rounded-xl">
+                      {profileForm.avatar ? (
+                         <div className="w-16 h-16 rounded-full overflow-hidden border border-slate-200 dark:border-white/10 shadow-sm flex-shrink-0">
+                           <img src={profileForm.avatar} alt="Profile" className="w-full h-full object-cover" />
+                         </div>
+                      ) : (
+                         <div className="w-16 h-16 rounded-full overflow-hidden border border-slate-200 dark:border-white/10 shadow-sm flex-shrink-0 flex items-center justify-center bg-slate-200 dark:bg-slate-700 text-2xl">
+                           👤
+                         </div>
+                      )}
+                      
+                      <div className="flex-1 flex flex-wrap gap-2 items-center">
+                        <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e.target.files[0], 'avatar', true)} className="hidden" id="profile-upload" />
+                        <label htmlFor="profile-upload" className="cursor-pointer inline-flex items-center justify-center px-4 py-2.5 bg-slate-200 hover:bg-slate-300 dark:bg-white/10 dark:hover:bg-white/20 text-slate-700 dark:text-white text-xs font-bold uppercase tracking-widest rounded-lg transition-colors">
+                          {profileForm.avatar ? 'Update Picture' : 'Upload Picture'}
+                        </label>
+                        {profileForm.avatar && (
+                          <button 
+                            type="button" 
+                            onClick={() => setProfileForm(p => ({ ...p, avatar: '' }))}
+                            className="inline-flex items-center justify-center px-4 py-2.5 bg-red-100 hover:bg-red-200 dark:bg-red-500/10 dark:hover:bg-red-500/20 text-red-600 dark:text-red-400 text-xs font-bold uppercase tracking-widest rounded-lg transition-colors outline-none"
+                          >
+                            Remove
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
                   <div>
                     <label className={labelClass}>Name</label>
                     <input 

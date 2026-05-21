@@ -2,15 +2,28 @@ import React, { useEffect, useState } from 'react';
 import api from '../../utils/api';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
+import { useAuth } from '../../context/AuthContext';
+import { Trash2, Plus, X } from 'lucide-react';
 
 export default function StockLogsPage() {
+  const { isAdmin, hasPermission } = useAuth();
   const [logs, setLogs] = useState([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const limit = 20;
 
-  useEffect(() => {
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [items, setItems] = useState([]);
+  const [formData, setFormData] = useState({
+    item: '',
+    action: 'Increase',
+    quantity: 1,
+    reason: 'Purchase',
+    notes: ''
+  });
+
+  const fetchLogs = () => {
     setLoading(true);
     api.get('/inventory/stock-logs', { params: { page, limit } })
       .then(r => { 
@@ -19,7 +32,35 @@ export default function StockLogsPage() {
       })
       .catch(() => toast.error('Failed to load activity logs'))
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchLogs();
   }, [page]);
+
+  useEffect(() => {
+    if (showAddModal) {
+      api.get('/inventory/items/all-light').then(res => setItems(res.data)).catch(console.error);
+    }
+  }, [showAddModal]);
+
+  const handleAddAction = async (e) => {
+    e.preventDefault();
+    try {
+      await api.post(`/inventory/items/${formData.item}/adjust`, {
+        action: formData.action,
+        quantity: Number(formData.quantity),
+        reason: formData.reason,
+        notes: formData.notes
+      });
+      toast.success('Action added successfully');
+      setShowAddModal(false);
+      setFormData({ item: '', action: 'Increase', quantity: 1, reason: 'Purchase', notes: '' });
+      fetchLogs();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to add action');
+    }
+  };
 
   // Monochrome Badge Logic
   const getActionStyle = a => a === 'Increase' 
@@ -27,6 +68,18 @@ export default function StockLogsPage() {
     : 'bg-white/80 dark:bg-white/10 text-slate-800 dark:text-white border border-slate-300 dark:border-white/20';
 
   const getReasonStyle = () => 'text-slate-500 dark:text-white/40 border border-white/5 bg-white/60 dark:bg-white/5';
+
+  const handleDeleteLog = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this log?')) return;
+    try {
+      await api.delete(`/inventory/stock-logs/${id}`);
+      setLogs(logs.filter(log => log._id !== id));
+      setTotal(prev => prev - 1);
+      toast.success('Log deleted successfully');
+    } catch (err) {
+      toast.error('Failed to delete log');
+    }
+  };
 
   return (
     <div className="space-y-8 pb-20 fade-in max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -39,6 +92,12 @@ export default function StockLogsPage() {
         
         {/* Quick Stats Grid can be added here if needed in future */}
         <div className="flex items-center gap-3">
+           {hasPermission('adjust_stock') && (
+             <button onClick={() => setShowAddModal(true)} className="px-5 py-3 bg-gradient-to-r from-[#d1a66a] to-[#b78645] text-[#1a1a1a] rounded-2xl flex items-center gap-2 font-bold uppercase tracking-widest text-[10px] shadow-[0_0_20px_rgba(196,154,91,0.4)] hover:shadow-[0_0_30px_rgba(196,154,91,0.6)] transition-all hover:scale-105 active:scale-95">
+               <Plus className="w-4 h-4" />
+               Add Action
+             </button>
+           )}
            <button onClick={() => window.location.reload()} className="p-3 rounded-2xl bg-white/60 dark:bg-white/5 text-slate-500 dark:text-white/40 hover:text-slate-800 dark:text-white transition-all border border-slate-200 dark:border-white/10">
              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -60,13 +119,14 @@ export default function StockLogsPage() {
                 <th className="px-8 py-6 text-sm font-black text-slate-500 dark:text-white/30 uppercase tracking-wider">Source / Reason</th>
                 <th className="px-8 py-6 text-sm font-black text-slate-500 dark:text-white/30 uppercase tracking-wider">Recorded By</th>
                 <th className="px-8 py-6 text-sm font-black text-slate-500 dark:text-white/30 uppercase tracking-wider">Timestamp</th>
+                {isAdmin && <th className="px-8 py-6 text-sm font-black text-slate-500 dark:text-white/30 uppercase tracking-wider text-right">Actions</th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
               {loading ? (
-                <tr><td colSpan={7} className="text-center py-20"><div className="animate-pulse text-white/20 font-bold uppercase tracking-widest">Accessing Logs...</div></td></tr>
+                <tr><td colSpan={isAdmin ? 8 : 7} className="text-center py-20"><div className="animate-pulse text-white/20 font-bold uppercase tracking-widest">Accessing Logs...</div></td></tr>
               ) : logs.length === 0 ? (
-                <tr><td colSpan={7} className="text-center py-20 text-white/20 font-medium">No activity records found in the current period.</td></tr>
+                <tr><td colSpan={isAdmin ? 8 : 7} className="text-center py-20 text-white/20 font-medium">No activity records found in the current period.</td></tr>
               ) : logs.map(log => (
                 <tr key={log._id} className="hover:bg-white/60 dark:bg-white/5 transition-colors group">
                   <td className="px-8 py-6 font-bold text-slate-800 dark:text-white text-sm tracking-tight">{log.itemName}</td>
@@ -99,6 +159,17 @@ export default function StockLogsPage() {
                       <span className="text-white/20 text-[10px] font-medium">{log.createdAt ? format(new Date(log.createdAt), 'HH:mm:ss') : ''}</span>
                     </div>
                   </td>
+                  {isAdmin && (
+                    <td className="px-8 py-6 text-right">
+                      <button
+                        onClick={() => handleDeleteLog(log._id)}
+                        className="p-2 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition-colors"
+                        title="Delete Log"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
@@ -137,6 +208,98 @@ export default function StockLogsPage() {
       <div className="text-center pt-10 opacity-5 select-none pointer-events-none font-black text-8xl text-slate-800 dark:text-white">
         ACTIVITY LOG
       </div>
+
+      {/* Add Action Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center px-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-[#111111] border border-white/10 rounded-3xl p-8 max-w-md w-full shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)] animate-slide-up relative">
+            <button 
+              onClick={() => setShowAddModal(false)}
+              className="absolute top-6 right-6 text-white/40 hover:text-white transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            
+            <h3 className="text-3xl font-serif text-white mb-2">Add Action</h3>
+            <p className="text-[#c49a5b] text-[10px] uppercase tracking-[0.2em] font-bold mb-8">Record manual stock adjustment</p>
+
+            <form onSubmit={handleAddAction} className="space-y-6">
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-widest text-white/50 mb-2">Item</label>
+                <select 
+                  required
+                  value={formData.item}
+                  onChange={e => setFormData({...formData, item: e.target.value})}
+                  className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#c49a5b]/50 focus:ring-1 focus:ring-[#c49a5b]/50 transition-all"
+                >
+                  <option value="" disabled>Select an item...</option>
+                  {items.map(i => (
+                    <option key={i._id} value={i._id}>{i.name} (Qty: {i.quantity})</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-white/50 mb-2">Action</label>
+                  <select 
+                    value={formData.action}
+                    onChange={e => setFormData({...formData, action: e.target.value})}
+                    className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#c49a5b]/50 focus:ring-1 focus:ring-[#c49a5b]/50 transition-all"
+                  >
+                    <option value="Increase">Increase</option>
+                    <option value="Decrease">Decrease</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-white/50 mb-2">Quantity</label>
+                  <input 
+                    type="number"
+                    min="1"
+                    required
+                    value={formData.quantity}
+                    onChange={e => setFormData({...formData, quantity: e.target.value})}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#c49a5b]/50 focus:ring-1 focus:ring-[#c49a5b]/50 transition-all"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-widest text-white/50 mb-2">Reason</label>
+                <select 
+                  value={formData.reason}
+                  onChange={e => setFormData({...formData, reason: e.target.value})}
+                  className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#c49a5b]/50 focus:ring-1 focus:ring-[#c49a5b]/50 transition-all"
+                >
+                  <option value="Purchase">Purchase</option>
+                  <option value="Usage">Usage</option>
+                  <option value="Damage">Damage</option>
+                  <option value="Transfer">Transfer</option>
+                  <option value="Adjustment">Adjustment</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-widest text-white/50 mb-2">Notes (Optional)</label>
+                <input 
+                  type="text" 
+                  value={formData.notes}
+                  onChange={e => setFormData({...formData, notes: e.target.value})}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/20 focus:outline-none focus:border-[#c49a5b]/50 focus:ring-1 focus:ring-[#c49a5b]/50 transition-all"
+                  placeholder="Enter any details..."
+                />
+              </div>
+
+              <button 
+                type="submit"
+                className="w-full py-4 mt-4 bg-gradient-to-r from-[#d1a66a] to-[#b78645] text-[#1a1a1a] rounded-xl font-bold uppercase tracking-widest text-xs shadow-[0_0_20px_rgba(196,154,91,0.3)] hover:shadow-[0_0_30px_rgba(196,154,91,0.5)] transition-all"
+              >
+                Submit Action
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

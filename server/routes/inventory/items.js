@@ -55,18 +55,41 @@ const openMaintenance = await MaintenanceLog.countDocuments({ status: { $ne: 'Co
 
 
 
+// Get all items (lightweight for map/audit)
+router.get('/all-light', auth, async (req, res) => {
+  try {
+    const items = await Item.find({})
+      .select('-warrantyCardImage -warrantyCard -invoiceDocument -imageUrl -description')
+      .sort({ createdAt: -1 })
+      .lean();
+    res.json(items);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 // Get all items
 router.get('/', auth, async (req, res) => {
   try {
-    const { category, search } = req.query;
+    const { category, search, page = 1, limit = 24 } = req.query;
     let query = {};
     if (category) query.category = category;
     if (search) query.$or = [
       { name: { $regex: search, $options: 'i' } },
       { sku: { $regex: search, $options: 'i' } }
     ];
-    const items = await Item.find(query).sort({ createdAt: -1 });
-    res.json(items);
+    
+    const skip = (Number(page) - 1) * Number(limit);
+    
+    const items = await Item.find(query)
+      .select('-warrantyCardImage -warrantyCard -invoiceDocument')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(Number(limit))
+      .lean();
+      
+    const total = await Item.countDocuments(query);
+    res.json({ items, total, page: Number(page), pages: Math.ceil(total / Number(limit)) });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -169,6 +192,26 @@ router.post('/:id/adjust', auth, async (req, res) => {
     await log.save();
     
     res.json({ item, log });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Allocate stock to multiple locations
+router.post('/:id/allocate', auth, async (req, res) => {
+  try {
+    const { allocations } = req.body;
+    const item = await Item.findById(req.params.id);
+    if (!item) return res.status(404).json({ message: 'Item not found' });
+    
+    const totalAllocated = allocations.reduce((acc, curr) => acc + Number(curr.quantity), 0);
+    if (totalAllocated > item.quantity) {
+      return res.status(400).json({ message: 'Cannot allocate more than total quantity' });
+    }
+    
+    item.allocations = allocations;
+    await item.save();
+    res.json(item);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

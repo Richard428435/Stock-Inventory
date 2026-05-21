@@ -62,10 +62,12 @@ function BarcodeCard({ item, onPrint, hasPermission }) {
             </h3>
             <div className="flex items-center gap-2 mt-1.5 flex-wrap">
               <span className="text-[10px] font-bold text-slate-500 dark:text-white/30 uppercase tracking-widest">{item.category}</span>
-              {item.location && (
+              {(item.location || (item.allocations && item.allocations.length > 0)) && (
                 <>
                   <span className="text-white/15">•</span>
-                  <span className="text-[10px] font-bold text-slate-500 dark:text-white/30 uppercase tracking-widest">📍 {item.location}</span>
+                  <span className="text-[10px] font-bold text-slate-500 dark:text-white/30 uppercase tracking-widest">
+                    📍 {item.allocations?.length > 0 ? (item.allocations.length === 1 ? item.allocations[0].location : `${item.allocations.length} Locs`) : item.location}
+                  </span>
                 </>
               )}
             </div>
@@ -117,11 +119,19 @@ export default function BarcodePage() {
     const fetchItems = async () => {
       try {
         const [itemsRes, catRes] = await Promise.all([
-          api.get('/inventory/items'),
+          api.get('/inventory/items/all-light'),
           api.get('/inventory/categories'),
         ]);
+        const fixedCategories = [
+          { _id: 'fixed-1', name: 'CFFA M&B - Audio' },
+          { _id: 'fixed-2', name: 'CFFA M&B - Live Production' },
+          { _id: 'fixed-3', name: 'CFFA M&B - Videography' },
+          { _id: 'fixed-4', name: 'CFFA M&B - Presentation' }
+        ];
+        const existingNames = new Set(catRes.data.map(c => c.name));
+        const newCategories = fixedCategories.filter(c => !existingNames.has(c.name));
         setItems(itemsRes.data);
-        setCategories(catRes.data);
+        setCategories([...catRes.data, ...newCategories]);
       } catch (err) {
         toast.error('Failed to load assets');
       } finally {
@@ -162,37 +172,54 @@ export default function BarcodePage() {
       </div>
 
       {/* Filters */}
-      <div className="glass-liquid p-4 rounded-2xl border border-slate-200 dark:border-white/10 flex flex-wrap gap-3 items-center">
-        <div className="relative flex-1 min-w-[200px]">
-          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 dark:text-white/30 text-sm pointer-events-none">🔍</span>
-          <input
-            type="text"
-            placeholder="Search by name or SKU…"
-            value={filter}
-            onChange={e => setFilter(e.target.value)}
-            className="w-full bg-white/60 dark:bg-white/5 border border-white/5 focus:border-slate-300 dark:border-white/20 rounded-xl pl-10 pr-4 py-2.5 text-slate-800 dark:text-white text-sm outline-none transition-all placeholder-slate-400 dark:placeholder-white/20"
-          />
+      <div className="space-y-4">
+        <div className="glass-liquid p-4 rounded-2xl border border-slate-200 dark:border-white/10 flex flex-wrap gap-3 items-center">
+          <div className="relative flex-1 min-w-[200px]">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 dark:text-white/30 text-sm pointer-events-none">🔍</span>
+            <input
+              type="text"
+              placeholder="Search by name or SKU…"
+              value={filter}
+              onChange={e => setFilter(e.target.value)}
+              className="w-full bg-white/60 dark:bg-white/5 border border-white/5 focus:border-amber-500/50 rounded-xl pl-10 pr-4 py-2.5 text-slate-800 dark:text-white text-sm outline-none transition-all placeholder-slate-400 dark:placeholder-white/20"
+            />
+          </div>
+          {filter && (
+            <button
+              onClick={() => setFilter('')}
+              className="px-4 py-2.5 rounded-xl bg-white/60 dark:bg-white/5 hover:bg-white/80 dark:bg-white/10 text-white/50 hover:text-slate-800 dark:text-white text-xs font-black uppercase tracking-widest transition-all border border-white/5"
+            >
+              Clear Search
+            </button>
+          )}
         </div>
 
-        <select
-          value={categoryFilter}
-          onChange={e => setCategoryFilter(e.target.value)}
-          className="bg-white/60 dark:bg-white/5 border border-white/5 hover:border-slate-200 dark:border-white/10 focus:border-slate-300 dark:border-white/20 rounded-xl px-4 py-2.5 text-slate-800 dark:text-white text-sm outline-none transition-all cursor-pointer"
-        >
-          <option value="" className="bg-[#1a0840]">All Categories</option>
-          {categories.map(c => (
-            <option key={c._id} value={c.name} className="bg-[#1a0840]">{c.name}</option>
-          ))}
-        </select>
-
-        {(filter || categoryFilter) && (
+        {/* Modern Category Pills */}
+        <section className="flex items-center gap-3 overflow-x-auto inventory-scrollbar pb-2 pt-1">
           <button
-            onClick={() => { setFilter(''); setCategoryFilter(''); }}
-            className="px-4 py-2.5 rounded-xl bg-white/60 dark:bg-white/5 hover:bg-white/80 dark:bg-white/10 text-white/50 hover:text-slate-800 dark:text-white text-xs font-black uppercase tracking-widest transition-all border border-white/5"
+            onClick={() => setCategoryFilter('')}
+            className={`whitespace-nowrap px-6 py-2.5 rounded-full font-bold text-xs uppercase tracking-widest transition-all duration-300 ${
+              categoryFilter === '' 
+                ? 'bg-slate-800 dark:bg-white text-white dark:text-slate-900 shadow-lg scale-105'
+                : 'bg-white/60 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-400 hover:bg-white hover:text-slate-900 dark:hover:bg-white/20'
+            }`}
           >
-            Clear
+            All Categories
           </button>
-        )}
+          {categories.map(c => (
+            <button
+              key={c._id}
+              onClick={() => setCategoryFilter(c.name)}
+              className={`whitespace-nowrap px-6 py-2.5 rounded-full font-bold text-xs uppercase tracking-widest transition-all duration-300 ${
+                categoryFilter === c.name
+                  ? 'bg-amber-500 text-white shadow-[0_4px_20px_rgba(245,158,11,0.4)] scale-105 border-transparent'
+                  : 'bg-white/60 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-400 hover:bg-white hover:text-slate-900 dark:hover:bg-white/20'
+              }`}
+            >
+              {c.name}
+            </button>
+          ))}
+        </section>
       </div>
 
       {/* Grid */}

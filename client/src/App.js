@@ -20,6 +20,9 @@ import StockLogsPage from './pages/inventory/StockLogsPage';
 import MaintenancePage from './pages/inventory/MaintenancePage';
 import ScannerPage from './pages/inventory/ScannerPage';
 import BarcodePage from './pages/inventory/BarcodePage';
+import AuditPage from './pages/inventory/AuditPage';
+import MapPage from './pages/inventory/MapPage';
+import CrewPage from './pages/inventory/CrewPage';
 
 
 
@@ -69,6 +72,9 @@ function AppContent() {
           <Route path="maintenance" element={<MaintenancePage />} />
           <Route path="scanner" element={<ScannerPage />} />
           <Route path="barcodes" element={<BarcodePage />} />
+          <Route path="audit" element={<AuditPage />} />
+          <Route path="map" element={<MapPage />} />
+          <Route path="crew" element={<CrewPage />} />
           <Route path="users" element={<AdminRoute><UsersPage /></AdminRoute>} />
         </Route>
 

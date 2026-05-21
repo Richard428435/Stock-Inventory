@@ -1,11 +1,15 @@
 const mongoose = require('mongoose');
 
 const itemSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  sku: { type: String, unique: true, sparse: true },
-  barcode: { type: String, unique: true, sparse: true },
-  category: { type: String, required: true },
+  name: { type: String, required: true, index: true },
+  sku: { type: String, unique: true, sparse: true, index: true },
+  barcode: { type: String, unique: true, sparse: true, index: true },
+  category: { type: String, required: true, index: true },
   location: { type: String },
+  allocations: [{
+    location: { type: String, required: true },
+    quantity: { type: Number, required: true, min: 1 }
+  }],
   quantity: { type: Number, default: 0, min: 0 },
   lowStockThreshold: { type: Number, default: 5 },
   model: { type: String },

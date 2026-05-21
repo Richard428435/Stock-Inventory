@@ -17,7 +17,16 @@ export default function CategoryManagerModal({ onClose, onUpdate }) {
   const loadCategories = async () => {
     try {
       const res = await api.get('/inventory/categories');
-      setCategories(res.data);
+      const fixedCategories = [
+        { _id: 'fixed-1', name: 'CFFA M&B - Audio' },
+        { _id: 'fixed-2', name: 'CFFA M&B - Live Production' },
+        { _id: 'fixed-3', name: 'CFFA M&B - Videography' },
+        { _id: 'fixed-4', name: 'CFFA M&B - Presentation' },
+        { _id: 'fixed-5', name: 'General Items' }
+      ];
+      const existingNames = new Set(res.data.map(c => c.name));
+      const newCategories = fixedCategories.filter(c => !existingNames.has(c.name));
+      setCategories([...res.data, ...newCategories]);
     } catch (err) {
       toast.error('Failed to load categories');
     } finally {
@@ -58,16 +67,21 @@ export default function CategoryManagerModal({ onClose, onUpdate }) {
   };
 
   return (
-    <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="glass-liquid p-8 max-w-md w-full mx-4 rounded-3xl border border-slate-300 dark:border-white/20 shadow-2xl">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-2xl font-bold text-slate-800 dark:text-white">Manage Categories</h3>
-          <button onClick={onClose} className="text-slate-500 dark:text-gray-400 hover:text-slate-800 dark:text-white transition-colors">✕</button>
-        </div>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center px-4 bg-black/60 backdrop-blur-sm animate-fade-in" onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="bg-[#111111] border border-white/10 rounded-3xl p-8 max-w-md w-full shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)] animate-slide-up relative">
+        <button 
+          onClick={onClose}
+          className="absolute top-6 right-6 text-white/40 hover:text-white transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
+        
+        <h3 className="text-3xl font-serif text-white mb-2">Manage Categories</h3>
+        <p className="text-[#c49a5b] text-[10px] uppercase tracking-[0.2em] font-bold mb-8">Organize inventory classification</p>
 
-        <form onSubmit={handleAdd} className="flex gap-2 mb-8">
+        <form onSubmit={handleAdd} className="flex gap-3 mb-8">
           <input 
-            className="flex-1 bg-white/60 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-2 text-slate-800 dark:text-white outline-none focus:border-blue-500 transition-all text-sm"
+            className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#c49a5b]/50 focus:ring-1 focus:ring-[#c49a5b]/50 transition-all text-sm"
             placeholder="New category name..."
             value={newCategory}
             onChange={e => setNewCategory(e.target.value)}
@@ -76,7 +90,7 @@ export default function CategoryManagerModal({ onClose, onUpdate }) {
           <button 
             type="submit" 
             disabled={processing || !newCategory.trim()}
-            className="px-4 py-2 glass-liquid text-slate-800 dark:text-white rounded-xl text-xs font-bold uppercase tracking-widest active:scale-95 disabled:opacity-50 hover:bg-white hover:text-slate-900 transition-all"
+            className="px-6 py-3 bg-gradient-to-r from-[#d1a66a] to-[#b78645] text-[#1a1a1a] rounded-xl font-bold uppercase tracking-widest text-xs shadow-[0_0_20px_rgba(196,154,91,0.3)] hover:shadow-[0_0_30px_rgba(196,154,91,0.5)] active:scale-95 disabled:opacity-50 transition-all"
           >
             Add
           </button>
@@ -84,49 +98,54 @@ export default function CategoryManagerModal({ onClose, onUpdate }) {
 
         <div className="space-y-3 max-h-64 overflow-y-auto inventory-scrollbar pr-2">
           {loading ? (
-            <div className="text-center py-4 text-gray-500 text-sm">Loading...</div>
+            <div className="text-center py-4 text-white/40 text-sm font-bold uppercase tracking-widest">Loading...</div>
           ) : categories.length === 0 ? (
-            <div className="text-center py-4 text-gray-500 text-sm italic">No categories created yet</div>
+            <div className="text-center py-4 text-white/40 text-sm italic font-bold uppercase tracking-widest">No categories created yet</div>
           ) : (
-            categories.map(cat => (
-              <div key={cat._id} className="flex items-center justify-between p-3 glass-card bg-white/60 dark:bg-white/5 border-white/5 group transition-all">
-                <span className="text-sm text-gray-200">{cat.name}</span>
-                <div className="flex items-center gap-2">
-                  {confirmDelete === cat._id ? (
-                    <>
+            categories.map(cat => {
+              const isFixed = cat._id.toString().startsWith('fixed-');
+              return (
+                <div key={cat._id} className="flex items-center justify-between p-4 bg-[#1a1a1a] rounded-xl border border-white/5 group transition-all">
+                  <span className="text-sm font-bold text-white/80">{cat.name}</span>
+                  <div className="flex items-center gap-2">
+                    {isFixed ? (
+                      <span className="px-3 py-1 text-[9px] font-bold uppercase tracking-widest text-white/30 border border-white/5 rounded-lg bg-white/5">System</span>
+                    ) : confirmDelete === cat._id ? (
+                      <>
+                        <button 
+                          onClick={() => handleDelete(cat._id)}
+                          disabled={processing}
+                          className="px-4 py-2 text-[10px] font-bold uppercase tracking-widest bg-red-500/20 border border-red-500/50 text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-all shadow-[0_0_15px_rgba(239,68,68,0.3)]"
+                        >
+                          Confirm
+                        </button>
+                        <button 
+                          onClick={() => setConfirmDelete(null)}
+                          className="px-4 py-2 text-[10px] font-bold uppercase tracking-widest bg-white/10 border border-white/20 text-white/70 rounded-lg hover:bg-white/20 hover:text-white transition-all"
+                        >
+                          Cancel
+                        </button>
+                      </>
+                    ) : (
                       <button 
-                        onClick={() => handleDelete(cat._id)}
+                        onClick={() => setConfirmDelete(cat._id)}
                         disabled={processing}
-                        className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500 hover:text-slate-800 dark:text-white transition-all"
+                        className="px-4 py-2 text-[10px] font-bold uppercase tracking-widest bg-red-500/5 border border-red-500/20 text-red-400 rounded-lg hover:bg-red-500/20 transition-all"
                       >
-                        Confirm
+                        Delete
                       </button>
-                      <button 
-                        onClick={() => setConfirmDelete(null)}
-                        className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest bg-white/80 dark:bg-white/10 text-slate-500 dark:text-gray-400 rounded-lg hover:bg-white hover:text-slate-900 transition-all"
-                      >
-                        Cancel
-                      </button>
-                    </>
-                  ) : (
-                    <button 
-                      onClick={() => setConfirmDelete(cat._id)}
-                      disabled={processing}
-                      className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500 hover:text-slate-800 dark:text-white transition-all"
-                    >
-                      Delete
-                    </button>
-                  )}
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
         
-        <div className="mt-8">
+        <div className="mt-8 pt-4 border-t border-white/10">
           <button 
             onClick={onClose}
-            className="w-full py-3 rounded-2xl bg-white/60 dark:bg-white/5 text-slate-600 dark:text-gray-300 font-bold uppercase tracking-widest transition-all text-xs border border-slate-200 dark:border-white/10 hover:bg-white hover:text-slate-900"
+            className="w-full py-4 rounded-xl bg-white/5 text-white/60 font-bold uppercase tracking-widest transition-all text-xs border border-white/10 hover:bg-white/10 hover:text-white"
           >
             Done
           </button>

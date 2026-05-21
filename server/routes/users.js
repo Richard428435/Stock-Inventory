@@ -79,7 +79,7 @@ router.put('/:id', auth, async (req, res) => {
       return res.status(403).json({ message: 'Access denied: You can only update your own profile.' });
     }
 
-    const { name, email, role, active, password } = req.body;
+    const { name, email, role, active, password, avatar } = req.body;
     const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ message: 'User not found' });
     
@@ -103,11 +103,13 @@ router.put('/:id', auth, async (req, res) => {
     if (role && user.role !== role) changes.push(`role to ${role}`);
     if (active !== undefined && user.active !== active) changes.push(active ? 'activated' : 'deactivated');
     if (password) changes.push('password changed');
+    if (avatar && user.avatar !== avatar) changes.push('avatar updated');
     if (name) user.name = name;
     if (email) user.email = email;
     if (role) user.role = role;
     if (active !== undefined) user.active = active;
     if (password) user.password = password;
+    if (avatar) user.avatar = avatar;
     await user.save();
     if (changes.length > 0) {
       user.history.unshift({ action: 'updated', details: `Changes: ${changes.join(', ')} by ${req.user.name}` });

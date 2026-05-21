@@ -15,4 +15,8 @@ const maintenanceSchema = new mongoose.Schema({
   userName: { type: String }
 }, { timestamps: true });
 
+maintenanceSchema.index({ status: 1 });
+maintenanceSchema.index({ createdAt: -1 });
+maintenanceSchema.index({ item: 1 });
+
 module.exports = mongoose.model('MaintenanceLog', maintenanceSchema);
