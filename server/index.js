@@ -9,11 +9,16 @@ dotenv.config();
 const app = express();
 
 // Middleware
-const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001'];
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'https://cffamedia.com',
+  'https://www.cffamedia.com'
+];
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (like mobile apps or curl) or allowed origins or any vercel.app
-    if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app') || origin.includes('amazonaws.com') || origin.includes('elasticbeanstalk.com')) {
+    if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app') || origin.includes('amazonaws.com') || origin.includes('elasticbeanstalk.com') || origin.includes('cffamedia.com')) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));

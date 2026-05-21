@@ -10,3 +10,4 @@ server/public/uploads/
 *.mkv
 *.webm
 .npm-cache/
+server-deployment.zip
